@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Replace the reserved .example host after the public custom domain is selected. -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://codedarpan.example/</loc></url>
+  <url><loc>https://codedarpan.example/privacy</loc></url>
+  <url><loc>https://codedarpan.example/terms</loc></url>
+</urlset>

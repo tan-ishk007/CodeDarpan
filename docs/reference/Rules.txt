@@ -1,0 +1,72 @@
+You are building a production-quality website. Follow every rule below. If a rule conflicts with the user's explicit instruction, ask before deviating. Never fabricate content, data, or contact details; use clearly marked placeholders and list them at the end.
+
+## 1. DESIGN: AVOID
+
+- Purple gradients and generic template aesthetics. Choose a deliberate, brand-appropriate visual style.
+- Vague hero text. The hero message must say specifically what the product or service is and who it is for.
+- Fake counters, fake metrics, fake reviews. Use only genuine, verifiable numbers and testimonials, or omit them.
+- Excessive scroll animations and cursor animations. Keep motion restrained and purposeful, and respect prefers-reduced-motion.
+- Pill-shaped buttons. Use considered button shapes that fit the brand.
+- Emoji used as icons. Use a real icon set (SVG).
+- AI-generated imagery. Use original, relevant, real imagery.
+- Em dashes anywhere in site copy.
+- A "Made with AI" tag or badge.
+- Generic AI-sounding copy. Write natural, specific, project-appropriate text.
+
+## 2. TRUST AND LEGAL: INCLUDE
+
+- Terms and Conditions page
+- Privacy Policy page
+- Site favicon
+- Custom domain (configure when the deployment supports it)
+
+Legal pages must be accurate for the product and applicable requirements. Flag that they need review by a qualified professional.
+
+## 3. THE 20 DETAILS THAT MAKE A SITE FEEL FINISHED
+
+1. Custom 404 page: branded, useful, with a clear way back.
+2. CTA above the fold: primary action visible without scrolling.
+3. Unique meta title per page.
+4. Unique, accurate meta description per page.
+5. Open Graph image for social sharing.
+6. Full favicon set (appropriate sizes and formats).
+7. robots.txt configured for the site's indexing goals.
+8. sitemap.xml.
+9. Alt text on every informative image; empty alt on purely decorative images.
+10. Mobile breakpoints: verify small, medium, and large screens.
+11. Sticky mobile CTA, only where helpful, unobtrusive, never covering content.
+12. Loading states for any operation in progress.
+13. Form error states that explain the problem and help the user fix it.
+14. Thank-you page or confirmation for successful submissions.
+15. Privacy Policy page.
+16. Terms page.
+17. Cookie banner with real consent controls, only when required. No decorative or misleading banners.
+18. Analytics installed only as needed, configured correctly, respecting consent and privacy rules.
+19. Real, authorized contact address. Never invent one.
+20. Compressed images, optimized for size while keeping suitable quality.
+
+## 4. PROJECT INSTRUCTION AND DOCUMENTATION FILES
+
+Set up the project so any AI tool or teammate can onboard quickly. Keep one source of truth and avoid duplicating content across files.
+
+- AGENTS.md: cross-tool onboarding and standing project guidance (primary file). Include these rules in it.
+- CLAUDE.md and .claude/rules/: Claude-specific and path-scoped guidance. Have CLAUDE.md point to AGENTS.md rather than repeat it.
+- GEMINI.md: Gemini CLI project context, pointing to AGENTS.md.
+- .github/copilot-instructions.md and .github/instructions/*.instructions.md: Copilot repo-wide and path-specific guidance.
+- .clinerules/: persistent and conditional Cline rules.
+- SKILL.md: repeatable procedures (for example, a pre-launch checklist) with optional scripts and references.
+- spec.md, plan.md, tasks.md: requirements, technical design, and task breakdown.
+- ARCHITECTURE.md: system boundaries, non-functional requirements, architectural decisions.
+- DESIGN.md: visual identity and design-system intent (palette, type, spacing, button and icon style, motion rules).
+- AUTH.md: service registration and authentication recipe, only if the project has auth.
+- REVIEW.md: AI code review policy for the project.
+- MEMORY.md and topic files: agent-written learned context. Do not hand-author these; let the agent maintain them.
+
+Create only the files relevant to the tools the team uses, and tell me which you created and why.
+
+## 5. WORKFLOW
+
+1. Read the existing project files first, then draft spec.md, plan.md, and tasks.md before writing code.
+2. Build to the rules above.
+3. Before finishing, run a pre-launch audit against sections 1 to 3 and report each item as done, not applicable (with reason), or needs input from me.
+4. List all placeholders, unverified claims, and items requiring my decision (domain, contact details, analytics ID, legal review, real testimonials and metrics).
