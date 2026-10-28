@@ -1,6 +1,6 @@
 import { useRef, useState, type DragEvent, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { ArrowDown, ArrowRight, ArrowUpRight, Check, FileArchive, Github, Layers3, Network, Search, ShieldAlert } from 'lucide-react';
 import { ApiError, submitGitHubAnalysis, submitZipAnalysis } from '../lib/api';
 import { Brand } from '../components/Brand';
@@ -9,7 +9,7 @@ import { StatusNotice, type NoticeKind } from '../components/StatusNotice';
 import { RepositoryJourney } from '../components/RepositoryJourney';
 import { HeroAtlasScene } from '../components/HeroAtlasScene';
 
-const heroImage = '/hero-atlas-royal.jpg';
+const heroImage = '/manus-storage/technical-atlas-hero-3d_027effd6.webp';
 const modeAssets = {
   explore: '/manus-storage/async-images/VRhyibADRj414gcsfTz213/image-1.webp',
   diagnose: '/manus-storage/async-images/VRhyibADRj414gcsfTz213/image-2.webp',
@@ -130,7 +130,6 @@ export default function HomePage() {
       </header>
 
       <main>
-        <OpeningBanner />
         <section className="hero-section" aria-labelledby="hero-title">
           <div className="hero-copy">
             <p className="eyebrow"><span className="eyebrow-rule" />CODEBASE CARTOGRAPHY <span className="eyebrow-dot">/</span> EVIDENCE FIRST</p>
@@ -153,10 +152,10 @@ export default function HomePage() {
         <RepositoryJourney />
 
         <section className="capabilities-section section-shell" id="capabilities" aria-labelledby="capabilities-title">
-          <motion.div className="section-heading" initial={{ opacity: 0, y: 28 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false, amount: .35 }} transition={{ duration: .7, ease: [0.16, 1, .3, 1] }}>
+          <div className="section-heading">
             <div><p className="eyebrow"><span className="eyebrow-rule" />A FIELD GUIDE FOR CODE</p><h2 id="capabilities-title">Four ways to read<br /><em>the same atlas.</em></h2></div>
             <p>Move from structure to evidence, then keep every view tied to the same repository and selection.</p>
-          </motion.div>
+          </div>
           <div className="mode-grid">
             <ModeCard number="01" title="Explore" name="Find the shape" image={modeAssets.explore} icon={<Network size={16} />} text="Trace imports and calls. Move between the tree, graph and source without losing your place." onClick={() => openSample('explore')} />
             <ModeCard number="02" title="Diagnose" name="Read the signals" image={modeAssets.diagnose} icon={<Search size={16} />} text="Review returned health factors, findings and history limits. No score is inferred." onClick={() => openSample('diagnose')} />
@@ -196,30 +195,9 @@ export default function HomePage() {
   );
 }
 
-function OpeningBanner() {
-  const bannerRef = useRef<HTMLElement>(null);
-  const { scrollYProgress } = useScroll({ target: bannerRef, offset: ['start start', 'end start'] });
-  const leftX = useTransform(scrollYProgress, [0, .66], ['0%', '-102%']);
-  const rightX = useTransform(scrollYProgress, [0, .66], ['0%', '102%']);
-  const splashOpacity = useTransform(scrollYProgress, [0, .66, .9, 1], [1, 1, .92, 0]);
-  const titleOpacity = useTransform(scrollYProgress, [0, .42, .7], [1, .88, 0]);
-  return (
-    <section ref={bannerRef} className="opening-splash-shell" aria-label="Opening program">
-      <motion.div className="opening-splash" aria-labelledby="opening-banner-title" style={{ opacity: splashOpacity }}>
-        <motion.div className="opening-splash__curtain opening-splash__curtain--left" style={{ x: leftX }}><span>CODEDARPAN</span><i /></motion.div>
-        <motion.div className="opening-splash__curtain opening-splash__curtain--right" style={{ x: rightX }}><span>LIVE ATLAS</span><i /></motion.div>
-        <motion.div className="opening-splash__title" style={{ opacity: titleOpacity }}><span>PROGRAM / 01</span><h2 id="opening-banner-title">How to understand<br /><em>a repo.</em></h2><p>Structure / relation / context</p></motion.div>
-        <motion.div className="opening-splash__watermark" animate={{ x: ['-8%', '8%', '-8%'] }} transition={{ duration: 18, repeat: Infinity, ease: 'easeInOut' }}>HOW TO UNDERSTAND A REPO&nbsp;&nbsp;&nbsp; / &nbsp;&nbsp;&nbsp;HOW TO UNDERSTAND A REPO</motion.div>
-        <motion.div className="opening-splash__center-line" initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} transition={{ delay: .45, duration: .75, ease: [0.16, 1, .3, 1] }} />
-        <span className="opening-splash__edge opening-splash__edge--left">FILES / SYMBOLS / RELATIONSHIPS</span><span className="opening-splash__edge opening-splash__edge--right">SCROLL TO ENTER THE ATLAS <ArrowDown size={14} /></span>
-      </motion.div>
-    </section>
-  );
-}
-
 function ModeCard({ number, title, name, image, icon, text, onClick }: { number: string; title: string; name: string; image: string; icon: React.ReactNode; text: string; onClick: () => void }) {
   return (
-    <motion.article className="mode-card" initial={{ opacity: 0, y: 34, rotateX: 7 }} whileInView={{ opacity: 1, y: 0, rotateX: 0 }} viewport={{ once: false, amount: .28 }} transition={{ duration: .7, delay: (Number(number) - 1) * .1, ease: [0.16, 1, .3, 1] }}>
+    <motion.article className="mode-card" initial={{ opacity: 0, y: 34, rotateX: 7 }} whileInView={{ opacity: 1, y: 0, rotateX: 0 }} viewport={{ once: true, amount: .28 }} transition={{ duration: .7, delay: (Number(number) - 1) * .1, ease: [0.16, 1, .3, 1] }}>
       <button type="button" className="mode-image-button" onClick={onClick} aria-label={`Open sample atlas in ${title} mode`}><img src={image} alt="" loading="lazy" /><span className="mode-open"><ArrowUpRight size={16} /></span></button>
       <div className="mode-card__meta"><span>{number} / {title.toUpperCase()}</span>{icon}</div>
       <h3>{name}</h3><p>{text}</p>
