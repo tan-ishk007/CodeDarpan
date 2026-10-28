@@ -13,7 +13,7 @@ COPY frontend frontend
 RUN pnpm --filter @codedarpan/backend build && pnpm --filter @codedarpan/frontend build
 
 FROM node:22-bookworm-slim AS runtime
-ENV NODE_ENV=production PORT=3000 BACKEND_PORT=3001 CODEDARPAN_DB_PATH=/data/codedarpan.sqlite CODEDARPAN_RETENTION_DAYS=7 CODEDARPAN_REQUIRE_AUTH=true
+ENV NODE_ENV=production PORT=3000 BACKEND_PORT=3001 CODEDARPAN_DB_PATH=/data/codedarpan.sqlite CODEDARPAN_RETENTION_DAYS=7 CODEDARPAN_REQUIRE_AUTH=true CODEDARPAN_PUBLIC_HTTPS=false
 WORKDIR /app
 RUN groupadd --system app && useradd --system --gid app --home-dir /app app && mkdir -p /data && chown app:app /data
 # Keeping the pnpm virtual store intact preserves better-sqlite3's native binding symlinks.
