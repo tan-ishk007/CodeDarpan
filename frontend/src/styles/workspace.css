@@ -312,3 +312,27 @@
   .health-summary { grid-template-columns: 1fr 1fr; }
   .evidence-filter { padding-inline: 9px; }
 }
+
+/* Evidence-only architecture heatmap. The intensity is relative to the returned response, not a risk prediction. */
+.health-heatmap { margin: 0 0 15px; padding: 12px; border: 1px solid var(--border); background: #f8f3e8; }
+.health-heatmap__heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.health-heatmap__heading h3 { margin: 3px 0 0; font: 400 20px/1.05 var(--display); }
+.health-heatmap__heading .eyebrow { color: var(--muted); font: 8px var(--mono); letter-spacing: .08em; text-transform: uppercase; }
+.health-heatmap__legend { color: var(--muted); font: 8px var(--mono); text-transform: uppercase; }
+.health-heatmap__note { margin: 8px 0 11px; color: var(--muted); font-size: 9px; line-height: 1.45; }
+.health-heatmap__matrix { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 5px; }
+.health-heatmap__cell { display: grid; gap: 4px; min-width: 0; padding: 8px; border: 1px solid rgba(143,48,48,.22); background: color-mix(in srgb, var(--oxblood) calc(var(--heat) * 100%), #f8f3e8); color: var(--ink); text-align: left; cursor: pointer; }
+.health-heatmap__cell:disabled { cursor: default; opacity: .72; }
+.health-heatmap__cell:not(:disabled):hover, .health-heatmap__cell:not(:disabled):focus-visible { outline: 2px solid var(--brass); outline-offset: 1px; }
+.health-heatmap__cell strong { overflow: hidden; font: 9px var(--mono); text-overflow: ellipsis; white-space: nowrap; }
+.health-heatmap__cell span { color: var(--soft-ink); font: 8px var(--mono); }
+.health-heatmap__axes { display: flex; justify-content: space-between; margin-top: 7px; color: var(--muted); font: 8px var(--mono); }
+@media (max-width: 620px) { .health-heatmap__matrix { grid-template-columns: 1fr; } }
+
+/* Dense-repository legibility upgrades */
+.source-code-wrap .line-numbers, .source-code-wrap .source-code { font-size: clamp(11px, .82vw, 13px) !important; line-height: 1.78; }
+.source-code-wrap { max-height: min(560px, 62vh); }
+.atlas-canvas-wrap { background: radial-gradient(circle at 50% 46%, rgba(175,140,87,.12), transparent 42%); }
+.atlas-canvas-wrap::after { position: absolute; inset: 0; background: linear-gradient(90deg, transparent 49.8%, rgba(242,235,221,.055) 50%, transparent 50.2%), linear-gradient(0deg, transparent 49.8%, rgba(242,235,221,.045) 50%, transparent 50.2%); background-size: 110px 90px; opacity: .48; pointer-events: none; content: ''; }
+.graph-hover-card { border-color: rgba(216,154,108,.65); box-shadow: 0 0 25px rgba(216,154,108,.13); }
+@media (prefers-reduced-motion: reduce) { .atlas-canvas-wrap::after { opacity: .2; } }

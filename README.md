@@ -1,6 +1,6 @@
 # CodeDarpan
 
-CodeDarpan is a React + TypeScript application with a Node.js/Express analyzer for public GitHub repositories and ZIP uploads. It parses JavaScript, JSX, TypeScript and TSX with Babel, resolves static relative imports, and serves a normalized dependency graph, source, search results, structural health evidence, onboarding suggestions and impact estimates.
+CodeDarpan is a React + TypeScript application with a Node.js/Express analyzer for public GitHub repositories and ZIP uploads. It parses JavaScript, JSX, TypeScript and TSX with Babel and accepts common Python, Go, Rust, Java, C/C++, Ruby and PHP source files with explicit heuristic-parser caveats, resolves static relative imports, and serves a normalized dependency graph, source, search results, structural health evidence, onboarding suggestions and impact estimates.
 
 ## Repository layout
 
@@ -46,3 +46,19 @@ The single-origin container configuration is in [`Dockerfile`](Dockerfile), [`co
 The application uses React, React DOM, React Router, Vite, TypeScript, Cytoscape.js, highlight.js, lucide-react, Express, Babel parser/traverse/types, Multer, yauzl, and uuid. GitHub public REST API and codeload are used for public repository metadata, snapshots and PR file lists. No AI model is used. Review package manifests and licenses before distribution.
 
 The UI includes a demo atlas explicitly labeled as sample data; live-analysis errors do not fall back to demo content. Privacy/terms pages are drafts and need operator details and legal review before public deployment.
+
+## AST traversal and graph-rendering notes
+
+The ingestion pipeline is staged: ZIP/GitHub intake first applies path, size, dependency-folder and symlink safeguards; Babel parses each accepted JavaScript-family file with error recovery; a second pass resolves relative import candidates; a final pass resolves safe lexical call bindings and builds the normalized graph. Every node keeps repository-relative source identity so graph selection, source inspection, search, onboarding links and impact analysis use the same identifier.
+
+Import resolution is bounded to relative paths and a small ordered extension/index candidate list. This keeps analysis deterministic and avoids pretending that package exports, aliases, dynamic imports or runtime dispatch are known. Call edges are emitted only when a unique local or imported exported function can be matched. Cycles use a linear-time strongly connected component traversal over the resolved import graph. Reverse dependency impact uses bounded breadth-first traversal, while churn requests are limited to five first-parent commits and 300 paths to protect GitHub rate limits.
+
+The browser receives normalized nodes and edges, filters invalid edge endpoints, and uses Cytoscape's single graph instance with a stable breadth-first layout. Search and evidence actions focus existing nodes rather than rebuilding the graph. The Diagnose view includes a relative churn × complexity heatmap only when the analyzer returns numeric pairs; its intensity is normalized to the observed response and is explicitly not a risk prediction. The benchmark harness measures intake, analysis and graph delivery separately from browser paint/frame rate.
+
+## Scope disclosure
+
+The AST-grade parser scope is JavaScript, JSX, TypeScript and TSX; common Python, Go, Rust, Java, C/C++, Ruby and PHP source files are also ingested with explicit heuristic-parser warnings. Repositories with these languages remain explorable through the heuristic adapter; the returned warning distinguishes that evidence from Babel AST-grade metrics. Extending the scope should add a language-specific parser adapter and fixtures without weakening the evidence/caveat contract.
+
+### Multi-language intake contract
+
+CodeDarpan now accepts common source extensions across JavaScript/TypeScript, Python, Go, Rust, Java, C/C++, Ruby and PHP. JavaScript-family files use Babel AST traversal for declarations, imports, calls, complexity and parser diagnostics. Other languages receive deterministic source-file, import, function and branch extraction with a visible heuristic-parser warning. This makes mixed-language repositories explorable without overstating AST certainty; language-specific AST adapters can be added behind the same normalized graph contract.
