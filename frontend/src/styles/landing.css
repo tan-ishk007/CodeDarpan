@@ -659,3 +659,77 @@
 .journey-story-cinema .journey-node { opacity: .08; }
 @media (max-width: 900px) { .journey-image-node { width: 118px; } .journey-image-node--core { width: 150px; } .journey-image-node--north-west, .journey-image-node--south-west { left: 2%; } .journey-image-node--north-east, .journey-image-node--south-east { right: 2%; } }
 @media (max-width: 560px) { .journey-image-node { width: 92px; } .journey-image-node--core { width: 128px; } .journey-image-node__label { font-size: 7px; } }
+
+/* From-scratch graph scaffold: no image assets, only modeled vector modules and pipes. */
+.journey-scaffold { position: absolute; z-index: 6; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+.journey-scaffold .scaffold-pipes path { fill: none; stroke: rgba(69,45,22,.25); stroke-width: 13; stroke-linecap: round; transform: translateY(7px); }
+.journey-scaffold .scaffold-pipes path + path { stroke: url(#scaffold-pipe); stroke-width: 5; transform: none; }
+.journey-scaffold .scaffold-pipes circle { r: 6; fill: #fff0b8; stroke: #8f3030; stroke-width: 2; filter: drop-shadow(0 3px 4px rgba(78,58,33,.3)); }
+.journey-scaffold .module-shadow { fill: rgba(74,48,22,.28); stroke: none; }
+.journey-scaffold .module-side { fill: #a98245; stroke: #765527; stroke-width: 1; }
+.journey-scaffold .module-top { fill: #ead2a2; stroke: #b99752; stroke-width: 2; }
+.journey-scaffold .module-orb { stroke: #8f3030; stroke-width: 2; }
+.journey-scaffold .module-etch { fill: none; stroke: #8f3030; stroke-width: 1.6; }
+.journey-scaffold .core-shadow { fill: rgba(74,48,22,.3); }
+.journey-scaffold .core-side { fill: #8d6631; stroke: #694820; stroke-width: 1.2; }
+.journey-scaffold .core-top { fill: #f0d8a9; stroke: #b99752; stroke-width: 2.5; }
+.journey-scaffold .core-ring { fill: none; stroke: #8f3030; stroke-width: 3; stroke-dasharray: 3 7; }
+.journey-scaffold .core-orb { stroke: #8f3030; stroke-width: 2; }
+.journey-story-cinema .journey-camera { z-index: 2; opacity: .16; }
+.journey-story-cinema .journey-camera .journey-node { display: none; }
+
+/* Final live-motion pass after preview inspection. */
+.opening-splash__curtain span, .opening-splash__curtain i { display: none; }
+.opening-splash__edge { letter-spacing: .12em; }
+.opening-splash__edge--left { left: 6%; }
+.opening-splash__edge--right { right: 6%; }
+.journey-scaffold .scaffold-pipes path { fill: none; stroke: url(#scaffold-pipe); stroke-width: 5; stroke-linecap: round; stroke-dasharray: 18 11; animation: pipe-flow 2.4s linear infinite; filter: drop-shadow(0 5px 3px rgba(67,43,20,.22)); }
+.journey-scaffold .scaffold-pipes circle { animation: packet-glow 1.8s ease-in-out infinite; }
+.journey-scaffold .scaffold-modules > g { transform-box: fill-box; transform-origin: center; animation: module-lift 5.5s ease-in-out infinite; }
+.journey-scaffold .scaffold-modules > g:nth-child(2) { animation-delay: -1.5s; }
+.journey-scaffold .scaffold-modules > g:nth-child(3) { animation-delay: -3s; }
+.journey-scaffold .scaffold-modules > g:nth-child(4) { animation-delay: -4.2s; }
+.journey-scaffold .scaffold-core { animation: core-breathe 4.2s ease-in-out infinite !important; }
+@keyframes pipe-flow { to { stroke-dashoffset: -58px; } }
+@keyframes packet-glow { 0%, 100% { opacity: .56; } 50% { opacity: 1; } }
+@keyframes module-lift { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-7px) rotate(.8deg); } }
+@keyframes core-breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.035); } }
+@media (prefers-reduced-motion: reduce) { .journey-scaffold .scaffold-pipes path, .journey-scaffold .scaffold-pipes circle, .journey-scaffold .scaffold-modules > g, .journey-scaffold .scaffold-core { animation: none !important; } }
+
+/* Preserve SVG translation while animating each module in place. */
+.journey-scaffold .scaffold-modules > g:nth-child(1) { animation-name: module-lift-nw; }
+.journey-scaffold .scaffold-modules > g:nth-child(2) { animation-name: module-lift-ne; }
+.journey-scaffold .scaffold-modules > g:nth-child(3) { animation-name: module-lift-sw; }
+.journey-scaffold .scaffold-modules > g:nth-child(4) { animation-name: module-lift-se; }
+@keyframes module-lift-nw { 0%, 100% { transform: translate(75px,91px); } 50% { transform: translate(75px,84px) rotate(.8deg); } }
+@keyframes module-lift-ne { 0%, 100% { transform: translate(518px,91px); } 50% { transform: translate(518px,84px) rotate(-.8deg); } }
+@keyframes module-lift-sw { 0%, 100% { transform: translate(75px,354px); } 50% { transform: translate(75px,347px) rotate(-.8deg); } }
+@keyframes module-lift-se { 0%, 100% { transform: translate(518px,354px); } 50% { transform: translate(518px,347px) rotate(.8deg); } }
+@keyframes core-breathe { 0%, 100% { transform: translate(365px,270px) scale(1); } 50% { transform: translate(365px,270px) scale(1.035); } }
+
+/* The first viewport is exclusively the opening program; the hero follows after it. */
+.opening-splash-shell { margin-top: -82px; }
+.opening-splash-shell .opening-splash { z-index: 30; }
+.journey-camera--removed { display: none; }
+
+/* Re-enabled working story graph: restore camera, routes and focus nodes after scaffold rollback. */
+.journey-story-cinema .journey-camera { z-index: auto; opacity: 1; }
+.journey-story-cinema .journey-camera .journey-node { display: block; opacity: 1; }
+
+/* Final graph-only enhancement: raised showcase figures with visible pipe travel. */
+.journey-showcase-elements { filter: drop-shadow(0 10px 8px rgba(68,45,22,.2)); }
+.journey-showcase-elements .showcase-shadow { fill: rgba(74,48,22,.25); stroke: none; }
+.journey-showcase-elements .showcase-side { fill: #a98245; stroke: #765527; stroke-width: 1; }
+.journey-showcase-elements .showcase-top { fill: #ead2a2; stroke: #b99752; stroke-width: 2; }
+.journey-showcase-elements .showcase-etch { fill: none; stroke: #8f3030; stroke-width: 1.6; }
+.journey-showcase-elements circle { fill: url(#node-metal); stroke: #8f3030; stroke-width: 2; }
+.journey-showcase-elements > g { transform-box: fill-box; transform-origin: center; animation: showcase-rise 5s ease-in-out infinite; }
+.journey-showcase-elements > g:nth-child(2) { animation-delay: -1.2s; }
+.journey-showcase-elements > g:nth-child(3) { animation-delay: -2.4s; }
+.journey-showcase-elements > g:nth-child(4) { animation-delay: -3.6s; }
+.journey-links path { stroke: url(#journey-line); stroke-width: 5; stroke-linecap: round; stroke-dasharray: 19 10; animation: story-pipe-flow 2.2s linear infinite; filter: drop-shadow(0 4px 3px rgba(74,48,22,.2)); }
+.journey-flow-packets circle { r: 6; fill: #fff0b8; stroke: #8f3030; stroke-width: 2; filter: drop-shadow(0 3px 4px rgba(78,58,33,.3)); animation: story-packet-glow 1.6s ease-in-out infinite; }
+@keyframes showcase-rise { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-7px) rotate(.8deg); } }
+@keyframes story-pipe-flow { to { stroke-dashoffset: -58px; } }
+@keyframes story-packet-glow { 0%, 100% { opacity: .62; } 50% { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .journey-showcase-elements > g, .journey-links path, .journey-flow-packets circle { animation: none !important; } }
