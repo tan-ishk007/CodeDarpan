@@ -1,22 +1,46 @@
 # CodeDarpan
 
-**Understand the code behind the code.**
+CodeDarpan is a React + TypeScript frontend for exploring repository structure, code relationships, health evidence, onboarding paths, and change impact. The project is organized as a small monorepo so the user-facing app and the future analyzer service have clear boundaries.
 
-CodeDarpan is a frontend for an evidence-backed repository dependency atlas. The current project contains the interface only. No analyzer API or existing application repository was included with the supplied archive, so GitHub/ZIP analysis needs a compatible backend at the documented `/api` routes. Live failures are shown honestly; the local interactive sample is opened only by **Explore sample atlas** and is labelled **DEMO DATA**.
+## Repository layout
 
-## Run locally
+```text
+codedarpan/
+├── backend/                 # Reserved for the analyzer service; no server is implemented here
+├── frontend/                # React + TypeScript + Vite application
+│   ├── public/              # Static assets and route/SEO files
+│   ├── scripts/             # Build-time prerendering
+│   └── src/                 # App pages, components, API client, types and styles
+├── .gitignore               # Root-level ignores for all workspace packages
+├── package.json             # Workspace-level convenience scripts
+├── pnpm-lock.yaml           # Shared dependency lockfile
+├── pnpm-workspace.yaml      # pnpm workspace declaration
+├── TODO.md                  # Product scope and outstanding work
+└── plan.md                  # Project notes
+```
+
+The frontend consumes a same-origin analyzer API. The analyzer backend is intentionally not part of this repository yet; see [`backend/README.md`](backend/README.md) for the boundary and integration note. Live analysis requires a compatible service, and the UI reports service failures rather than substituting demo results. Sample data is available only through the explicit sample-atlas action.
+
+## Requirements
+
+- Node.js 22 or a compatible current Node.js release
+- pnpm 11.25.0 (the version declared by `packageManager`)
+
+## Setup and commands
+
+Run these commands from the repository root:
 
 ```sh
 pnpm install
-pnpm dev
+pnpm dev          # Start the frontend on http://localhost:3000
+pnpm typecheck    # Run TypeScript checks
+pnpm test         # Run the frontend test suite
+pnpm build        # Typecheck, build, and prerender the frontend
+pnpm preview      # Preview the production build on port 3000
 ```
 
-Build the frontend with `pnpm build` and run TypeScript checking with `pnpm typecheck`.
+The optional `CODEDARPAN_PUBLIC_ORIGIN` environment variable can be set to the real public HTTPS origin during the build to generate canonical URLs and a sitemap. Leave it unset for local builds; do not use a placeholder domain.
 
-## Product scope and constraints
+## Backend status
 
-See `spec.md`, `plan.md`, `TODO.md`, `ARCHITECTURE.md`, `DESIGN.md`, and `AGENTS.md`. The original problem statement, v2 frontend master prompt, full implementation checklist and `Rules.txt` are preserved in `docs/reference/`. API route contracts are documented there; this frontend does not implement a parser, persistence or backend. Privacy and terms pages are frontend drafts and need qualified professional review before production use. No custom domain, contact address or backend retention policy was supplied.
-
-## Tool disclosure
-
-See `docs/tool-disclosure.md` for runtime libraries and the boundary between implemented frontend UI and unavailable backend functions. The interface does not use AI-generated images, AI model explanations, analytics trackers or cookie-based login. Platform site analytics are disabled for this project; this does not assert that all platform/CDN analytics are disabled.
+`backend/` is a documented placeholder, not a runnable server. No analyzer, parser, database, authentication, or backend routes are included in this frontend-focused project. Implementing a backend is a separate scope and must follow the API contract consumed by `frontend/src/lib/api.ts` and described in `TODO.md`.

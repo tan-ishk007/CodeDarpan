@@ -1,43 +1,41 @@
-# CodeDarpan Frontend TODO
+# CodeDarpan Project TODO
 
-All in-scope frontend outcomes are implemented. External service, domain and legal-review dependencies are listed after the acceptance clauses.
+## 1. Landing, repository intake and sample entry
+- [x] Build `/` with the supplied CodeDarpan identity, a GitHub repository URL field and optional ref, a ZIP upload/drop zone, capability navigation, an Ingest → Parse → Resolve → Explore flow, supplied technical atlas artwork, and a compact footer.
+- [x] Submit GitHub URLs to documented `POST /api/analyses` as JSON `{ repositoryUrl, ref? }`; submit ZIP files to the same route using multipart field `file`. Validate obvious URL and `.zip`-suffix issues in the browser; do not claim client-side validation replaces backend ZIP safety/size checks.
+- [x] Show honest validating/upload/queued/running/stage/ready/failed/rate-limit/invalid-input/network/API-unavailable outcomes using returned server state/messages where available. Never invent a percentage, result or progress stage, and never silently open demo data after a live failure.
+- [x] Open the local sample fixture only from the explicit **Explore sample atlas** action. Keep a persistent **DEMO DATA** label on every sample workspace view and state that its evidence is illustrative.
 
-## Landing, identity and repository intake
+## 2. Workspace, graph, source and coordinated navigation
+- [x] Build `/workspace` with returned repository/revision/status and summary only, global file/function/symbol search, Explore/Diagnose/Onboard/Impact modes, a file tree, a real interactive Cytoscape graph, relationship legend/filters, graph fit/reset/depth controls, and a selected-entity source/evidence inspector.
+- [x] Keep file-tree, graph, search, source and mode navigation synchronized. Support keyboard selection, graph pan/zoom/select/hover, one stable layout, empty/loading/error/partial/large-graph states, and search-result centering/highlighting.
+- [x] Use relationship arrows and styles in addition to color: imports point importer → dependency; calls point caller → callee; import/call edges have distinct solid/dashed/dotted paths; impact follows reverse relationships. Do not substitute a static graph image for Cytoscape.
+- [x] Show only returned source and facts: repository-relative path, entity kind/language, source range/line numbers, token count and counting convention only when supplied, LOC/complexity only when supported, returned imports/dependents, confidence, parser warnings and unsupported/missing-source states. Do not fabricate live source snippets or metrics.
 
-- [x] Build `/` with the CodeDarpan symbol and wordmark; restrained Explore, How it works and Open workspace navigation; headline “The architecture is already there. Make it visible.”; tagline “Understand the code behind the code.”; concise substantiated copy; GitHub URL and optional ref fields; Analyze repository action; validated ZIP upload/drop zone with feedback and clear errors; the explicit “Explore sample atlas” action; technical atlas artwork; Explore/Diagnose/Plan/Onboard capabilities; Ingest → Parse → Resolve → Explore flow; and compact footer. Do not show invented counts, testimonials, benchmark claims or unsupported AI marketing.
-- [x] GitHub URL/ref and ZIP submissions use only the documented `POST /api/analyses` contract. Show truthful validating, upload, queued/running/stage, ready, cancelled, failed, rate-limit, invalid-input and network/API-unavailable states; expose server stage/message when returned; do not invent progress percentages or switch to a fixture after a live failure.
+## 3. Evidence-backed diagnosis, onboarding and impact
+- [x] Diagnose uses only documented `GET /api/analyses/:runId/health` response data, including score/confidence/factors/findings/history availability when present. Explain available factor definitions, cycles/hotspot evidence and churn × complexity only when returned. If history is unavailable, say so using the actual backend wording where provided; never infer zero churn.
+- [x] Onboarding uses only ordered contributor steps returned by `GET /api/analyses/:runId/onboarding?role=...&issueUrl=...`, with evidence-based reasons and clickable file/module links. Public issues appear only when available through documented `GET /api/analyses/:runId/issues?labels=good-first-issue,help-wanted`; report issue failure/no relevant issue clearly.
+- [x] Selected-file impact uses documented `GET /api/analyses/:runId/impact?nodeId=...&depth=3`; public PR impact uses documented `POST /api/analyses/:runId/pr-impact` with `{ prUrl }`. Show only returned changed files, mapped nodes, direct/transitive dependents, related tests, unresolved relationships and caveats; clicks focus graph/source. Describe results as structural blast-radius estimates, not predictions of all runtime failures.
+- [x] For private/malformed/unavailable/different-repository/rate-limited/partial responses, state the limitation; unsupported/missing response shapes are errors/unavailable states rather than invented UI content.
 
-## Explore atlas and source inspection
+## 4. Design, accessibility, responsive behavior and pages
+- [x] Follow the supplied Astral Cartographer direction and exact palette: parchment `#F2EBDD`, ink `#1D1A18`, oxblood `#8F3030`, brass `#AF8C57`, sage `#7C8980`, paper `#FAF7F0`, border `#D8CCB7`, muted `#6E6961`. Use Instrument Serif, DM Sans and IBM Plex Mono; reuse supplied glyph and relevant supplied artwork.
+- [x] Replace the four `/` capability-card illustrations with separate, coordinated light-mode, softly lit isometric 3D-style scenes on parchment/paper backgrounds. Make Explore, Diagnose, Onboard and Impact visually distinct; avoid black backgrounds and neon glow; retain meaningful alternative text; keep these conceptual images separate from the interactive live graph.
+- [x] Use restrained cartographic lines and brass rules around real evidence; square-corner controls; no purple/neon, generic dashboard cards, fake metrics/reviews, AI badges, emoji icons, pill buttons or excessive motion. Keep graph edge cues non-color-dependent; honor reduced motion and meaningful image alt text.
+- [x] Make inputs, file upload, tabs, menus, graph controls and search keyboard-accessible, with visible focus, readable contrast and useful accessible labels. Below 900px, use selectable Files/Atlas/Details panel tabs instead of compressed columns; prevent clipped controls and text.
+- [x] Add unique title/description metadata, branded 404, privacy and terms review drafts, favicon, Open Graph artwork, robots, sitemap, web manifest, and `GET /manus-routes.json` for `/`, `/workspace`, `/privacy`, `/terms` only. Do not invent the public domain, operator/contact, jurisdiction, backend retention/processing policy or legal guarantees; state the unresolved items and requirement for qualified legal review. Canonical links and `sitemap.xml` are generated only when the owner configures a real HTTPS public origin; neither contains a placeholder domain.
 
-- [x] Build `/workspace` with repository/revision/status, actual returned summary values, global file/function/symbol search, Explore/Diagnose/Onboard/Impact mode tabs, file tree, real Cytoscape graph, relationship legend/filters, layout, depth, fit/reset and selected-entity inspector/source. Graph nodes/edges must come from normalized API data or the explicitly invoked demo fixture, not a graph image.
-- [x] Keep tree, graph, search, source, dependencies and mode-panel navigation synchronized. Support pan, zoom, select, hover details, fit-to-view, one stable layout, filters, empty/loading/error/partial/large-graph states, and search result centering plus relationship highlighting. Import edges point importer → dependency; call edges point caller → callee; impact follows reverse relationships. Distinguish edge kinds by line style and legend, not color alone.
-- [x] Show only actual returned source and facts: repository-relative path, entity kind/language, source range, line numbers, token count and its counting convention if supplied, LOC/complexity only when supported, imports/dependents, confidence, parser warnings and unsupported/missing-source states. Never fabricate live code or metrics.
-- [x] The sample atlas is opened only by the explicit “Explore sample atlas” action and shows a persistent “DEMO DATA” label. No failure, missing route or empty response may silently substitute demo content.
+## 5. Frontend-only architecture and delivery
+- [x] Implement a fresh modular React + TypeScript + Vite frontend with a same-origin relative API client restricted to the documented endpoints. Keep typed API contracts in `src/types`, endpoint logic in `src/lib/api.ts`, sample values only in `src/data/demo.ts`, and interface concerns in pages/components/styles.
+- [x] Do not create an analyzer backend, parser, database, authentication/accounts, analytics, cookies, billing, fake live results or undocumented server routes. Live API failures remain visible and never load sample results. WebDev site analytics and Manus badge scripts are disabled in project settings.
+- [x] Keep route manifest and asset references synchronized; run TypeScript diagnostics, the available test suite and production build; verify the configured preview is serving after the UI is implemented. Leave backend/domain/legal-owner dependencies clearly documented.
 
-## Diagnose, Onboard and Impact
+## External prerequisites before a public live launch
+- The analyzer backend is not part of this frontend; live repository analysis requires a compatible service implementing the documented same-origin API contracts.
+- The owner must supply the real HTTPS public origin before canonical URLs and a production sitemap can be emitted.
+- Operator/contact, actual data flows, processing/retention/deletion, jurisdiction and any third-party disclosures remain unresolved; privacy/terms are review drafts and require qualified legal review before launch.
+- Site-level analytics and Manus badge scripts are disabled. Other provider, platform or CDN measurement outside these settings may still exist; this project does not claim that all tracking has stopped.
 
-- [x] Diagnose uses actual backend health/findings only: score/confidence/factors only when returned; transparent factor definitions where available; cycle and hotspot evidence; actual churn × complexity data; and clear partial/unavailable states. ZIP runs without history say “Git history unavailable” (or the exact backend wording), never zero churn.
-- [x] Onboard renders only backend-returned ordered contributor steps with evidence-based reasons and clickable file/module links; public issues appear only when available with title, labels, URL, candidate files and evidence. Issue failure/no relevant issue is stated clearly and repository exploration remains available.
-- [x] Impact supports selected-file impact and public PR URLs only through documented routes; show changed files, direct/transitive dependents, related tests, unresolved relationships and returned caveats/uncertainty. Clicks focus the graph/source. Clearly state malformed/private/unavailable/different-repository/rate-limited limitations. Describe results as structural blast-radius estimates, not predictions of every runtime failure.
-
-## Accessibility, responsive shell, trust and legal pages
-
-- [x] Use the supplied exact palette and cartographic visual identity, optimize supplied imagery for actual rendered dimensions, preserve SVG quality, use informative alt text and keep decorative art out of data views. Avoid purple/neon, generic SaaS cards, fake metrics/reviews/code, AI badges, emoji icons, pill buttons, em dashes and excessive motion.
-- [x] Provide keyboard-accessible tabs, inputs, file upload, graph controls and menus; visible focus, readable contrast, ARIA labels, reduced-motion behavior and relationship/severity/confidence cues that do not rely on color alone. At narrow widths, use panel drawers/tabs instead of compressed columns; avoid clipped controls or text.
-- [x] Include unique title/description per page, Open Graph image, favicon, robots.txt, sitemap.xml, branded 404, privacy policy and terms page. Legal pages must be accurate to this frontend, flag qualified professional review and disclose unresolved backend/data-retention/jurisdiction details; do not invent a contact address, analytics ID, domain or testimonials. Do not add a decorative cookie banner or unneeded analytics.
-- [x] Include relevant onboarding and product docs (`AGENTS.md`, `spec.md`, `plan.md`, `TODO.md`, `ARCHITECTURE.md`, `DESIGN.md`, `REVIEW.md`) and state which exist for which purpose. Keep docs consistent with the actual frontend and its unavailable backend boundary.
-
-## Build and delivery
-
-- [x] Configure project language diagnostics, serve a complete `GET /manus-routes.json` manifest for `/`, `/workspace`, `/privacy`, and `/terms`, and build the complete frontend in a maintainable folder structure. Verify readiness, production build/typecheck, route-manifest JSON and the implemented user flows; report exactly what ran and what remains unavailable.
-
-## Completion evidence and remaining dependencies
-
-- TypeScript check passed with `pnpm typecheck`.
-- Six analyzer API client contract tests passed with `pnpm test`, including GitHub payload, ZIP multipart field, graph depth, non-JSON response, missing-route 404 and structured rate-limit error.
-- Production build passed with `pnpm build`.
-- Local HTTP smoke checks returned 200 for the landing/workspace/legal/custom-404 routes, route manifest and bundled image/icon assets. The complete `manus-routes.json` response was inspected. All six exact uploaded image-storage paths used by the UI returned 200 through Preview.
-- The source/read-only compliance review was completed. Full browser click-through/screenshot testing was not run.
-- The archive did not contain an analyzer backend. Live GitHub/ZIP analysis and backend-dependent insight routes remain unavailable until a compatible service implements the documented `/api` contracts. The interface reports these failures and does not substitute sample data.
-- Replace the reserved `.example` sitemap/robots host after the owner chooses a production domain. Operator/contact, jurisdiction and backend retention/processing details still require owner input; privacy and terms drafts require qualified legal review.
-- The optional supplied 3D GLB is intentionally deferred. The real 2D Cytoscape graph is the product centerpiece and the supplied asset bible treats 3D as optional.
+## 6. Motion polish — deferred by the final checklist
+- [x] Keep the existing 3D/isometric hero artwork conceptual and static, with all headline and intake copy as real HTML; it does not represent live repository data or replace the interactive graph.
+- [ ] Defer scroll-linked reveals and choreographed motion until the core interactive graph, source synchronization and required acceptance tests are verified. Any later motion must remain optional, respect `prefers-reduced-motion`, avoid scroll hijacking, and never animate invented progress or repository evidence.
