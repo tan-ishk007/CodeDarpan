@@ -114,6 +114,10 @@
 .site-footer nav a { color: var(--muted); }
 .site-footer nav a:hover { color: var(--oxblood); }
 .footer-boundary { padding-left: 18px; border-left: var(--rule); color: var(--muted); font: 9px var(--mono); }
+.analyzer-health { display: inline-flex; align-items: center; gap: 7px; }
+.analyzer-health__led { width: 6px; height: 6px; flex: 0 0 auto; border-radius: 50%; background: var(--brass); }
+.analyzer-health.is-connected .analyzer-health__led { background: var(--sage); }
+.analyzer-health.is-unavailable .analyzer-health__led { background: var(--oxblood); }
 @media (max-width: 1050px) {
   .hero-section { grid-template-columns: 1fr .9fr; gap: 36px; }
   .hero-copy h1 { font-size: clamp(47px, 5.7vw, 64px); }

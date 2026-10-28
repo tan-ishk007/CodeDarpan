@@ -30,6 +30,12 @@ describe('CodeDarpan API integration', () => {
     await ready();
   },10000);
   afterAll(() => { server?.kill('SIGTERM'); });
+  it('reports live analyzer service health as JSON', async () => {
+    const response=await fetch(`http://127.0.0.1:${port}/api/health`);
+    expect(response.status).toBe(200);
+    expect(response.headers.get('content-type')).toMatch(/application\/json/i);
+    expect(await response.json()).toEqual(expect.objectContaining({status:'ok',service:'CodeDarpan analyzer'}));
+  });
   it('analyzes a ZIP and returns resolved imports, source, and AST metrics', async () => {
     const archive=await zip({'src/main.ts':"import { helper } from './helper';\nexport function main(x: number) { if (x) return helper(); return 0; }\n",'src/helper.ts':'export function helper(){ return 1 }','src/unrelated.ts':'export function helper(){ return 99 }'});
     const form=new FormData();form.append('file',new Blob([archive]),'fixture.zip');
@@ -51,6 +57,22 @@ describe('CodeDarpan API integration', () => {
     const form=new FormData();form.append('file',new Blob([archive]),'unsafe.zip');
     const response=await fetch(`http://127.0.0.1:${port}/api/analyses`,{method:'POST',body:form});
     expect(response.status).toBe(400);expect((await response.json()).message).toMatch(/relative path|Unsafe ZIP path/);
+  });
+  it('returns a clear client error for a non-GitHub repository URL', async () => {
+    const response=await fetch(`http://127.0.0.1:${port}/api/analyses`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({repositoryUrl:'https://example.com/acme/project'})});
+    expect(response.status).toBe(400);expect((await response.json()).message).toMatch(/Only public github\.com repositories/);
+  });
+  it('reports an unsupported-only ZIP instead of creating an empty analysis', async () => {
+    const archive=await zip({'README.md':'Documentation only.','index.html':'<h1>No supported source</h1>'});
+    const form=new FormData();form.append('file',new Blob([archive]),'unsupported.zip');
+    const response=await fetch(`http://127.0.0.1:${port}/api/analyses`,{method:'POST',body:form});
+    expect(response.status).toBe(422);expect((await response.json()).message).toMatch(/No supported JavaScript or TypeScript source files/);
+  });
+  it('rejects a ZIP entry above the expanded per-file limit', async () => {
+    const archive=await zip({'src/large.ts':'x'.repeat(2*1024*1024+1)});
+    const form=new FormData();form.append('file',new Blob([archive]),'large.zip');
+    const response=await fetch(`http://127.0.0.1:${port}/api/analyses`,{method:'POST',body:form});
+    expect(response.status).toBe(400);expect((await response.json()).message).toMatch(/file-count or expanded-size limits/);
   });
   it('isolates analyses by account and returns evidence-backed onboarding and honest churn status', async () => {
     const email=`${randomUUID()}@example.test`;

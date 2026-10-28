@@ -8,6 +8,8 @@ From the repository root, use `pnpm install`, `pnpm dev` (API :3001 and Vite :30
 
 `POST /api/analyses` accepts JSON `{ repositoryUrl, ref? }` for public GitHub repositories or multipart `file` for ZIP. At present, each analysis is computed synchronously; the response is returned after it reaches `ready`, while `/events` emits a terminal SSE notification. The frontend documents all routes in `frontend/src/lib/api.ts`.
 
+`GET /api/health` returns JSON with `status: "ok"`, the service name and the current in-memory analysis count. It is a process/API liveness check only; it does not validate GitHub availability, authentication, or a particular analysis submission. The frontend uses this route for public analyzer API status indicators.
+
 The parser supports JavaScript, JSX, TypeScript and TSX through Babel. It extracts import/export paths, declaration symbols, cyclomatic estimate and call expressions. Relative imports resolve by exact path, common extensions, or `index` candidates. Import edges point importer → dependency. Declared functions are graph nodes; call edges follow Babel lexical bindings for local declarations and named/default imported functions with a resolved source. This avoids same-name global matching, but dynamic imports, member/namespace calls, dependency-package calls, complex re-exports and runtime dispatch remain unresolved. Searchable symbols focus on declarations.
 
 Token count is a lexical approximation (identifiers, numeric literals, operators and punctuation; comments/whitespace excluded), not model tokenization. Complexity is `1 +` if/loop/catch/ternary/logical branches and switch cases after the first. These metrics are estimates, not formal proof of runtime behavior.

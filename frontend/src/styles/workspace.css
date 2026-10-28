@@ -6,6 +6,7 @@
 .workspace-repo-stamp svg { color: var(--brass); flex: 0 0 auto; }
 .workspace-repo-stamp code { overflow: hidden; max-width: 180px; padding: 3px 6px; border: 1px solid var(--border); color: var(--muted); font: 9px var(--mono); text-overflow: ellipsis; white-space: nowrap; }
 .workspace-status { display: inline-flex; align-items: center; gap: 7px; max-width: 215px; overflow: hidden; padding: 6px 8px; border: 1px solid var(--border); color: var(--muted); font: 9px var(--mono); text-overflow: ellipsis; text-transform: uppercase; white-space: nowrap; }
+.workspace-health { max-width: 155px; overflow: hidden; color: var(--muted); font: 9px var(--mono); text-overflow: ellipsis; white-space: nowrap; }
 .status-led { width: 6px; height: 6px; flex: 0 0 auto; border-radius: 50%; background: var(--sage); }
 .workspace-status.is-demo { border-color: rgba(143,48,48,.42); background: #f5e8e3; color: #6d2d2d; font-weight: 700; }
 .workspace-status.is-demo .status-led { background: var(--oxblood); }
@@ -234,6 +235,7 @@
   .workspace-repo-stamp { flex: 1 1 45%; order: 2; margin-left: auto; justify-content: flex-end; }
   .workspace-repo-stamp code { display: none; }
   .workspace-status { max-width: 130px; order: 1; margin-left: auto; font-size: 9px; }
+  .workspace-health { max-width: 135px; order: 2; }
   .workspace-home-link { order: 1; font-size: 0; }
   .workspace-home-link svg { width: 17px; height: 17px; }
   .demo-ribbon { top: 57px; min-height: 31px; font-size: 9px; }

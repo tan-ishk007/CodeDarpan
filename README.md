@@ -27,6 +27,10 @@ pnpm build
 
 The API can be started alone with `pnpm --filter @codedarpan/backend dev`. Set `PORT` to change its port. Production requires a same-origin reverse proxy to route `/api` to the API and other paths to the built frontend. Set `CODEDARPAN_PUBLIC_ORIGIN` to the actual HTTPS origin only when building for a public deployment.
 
+`GET /api/health` returns the analyzer process health as JSON. The homepage, workspace, privacy and terms pages check this endpoint for their shared analyzer API status; a successful health check confirms API reachability, not that a particular repository submission or external GitHub request will succeed.
+
+When `CODEDARPAN_REQUIRE_AUTH=true`, users must sign in at `/account` before creating or opening analyses. Authentication failures are separate from analyzer health and should not be interpreted as an API outage.
+
 ## Analysis conventions
 
 Imports are directed from importer to dependency. The graph includes file and declared function nodes. Function calls use Babel lexical bindings, local declaration identity, and matching imported/exported function symbols to avoid linking ambiguous same-name functions; dynamic/member/dependency-package calls and unresolved imports remain omitted, so it is not a complete runtime call graph. File token count is a lexical approximation rather than a model tokenizer. Complexity is a cyclomatic estimate, convention `1 + if/loops/catch/ternary/non-default switch cases/logical operators`. The graph's confidence and caveats are static-analysis evidence, not runtime predictions.
