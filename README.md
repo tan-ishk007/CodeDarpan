@@ -1,46 +1,44 @@
 # CodeDarpan
 
-CodeDarpan is a React + TypeScript frontend for exploring repository structure, code relationships, health evidence, onboarding paths, and change impact. The project is organized as a small monorepo so the user-facing app and the future analyzer service have clear boundaries.
+CodeDarpan is a React + TypeScript application with a Node.js/Express analyzer for public GitHub repositories and ZIP uploads. It parses JavaScript, JSX, TypeScript and TSX with Babel, resolves static relative imports, and serves a normalized dependency graph, source, search results, structural health evidence, onboarding suggestions and impact estimates.
 
 ## Repository layout
 
 ```text
 codedarpan/
-├── backend/                 # Reserved for the analyzer service; no server is implemented here
+├── backend/                 # Express API, Babel parsing and analysis routes
 ├── frontend/                # React + TypeScript + Vite application
-│   ├── public/              # Static assets and route/SEO files
-│   ├── scripts/             # Build-time prerendering
-│   └── src/                 # App pages, components, API client, types and styles
-├── .gitignore               # Root-level ignores for all workspace packages
-├── package.json             # Workspace-level convenience scripts
+├── package.json             # Workspace scripts
 ├── pnpm-lock.yaml           # Shared dependency lockfile
-├── pnpm-workspace.yaml      # pnpm workspace declaration
-├── TODO.md                  # Product scope and outstanding work
-└── plan.md                  # Project notes
+└── pnpm-workspace.yaml      # Frontend and backend workspace declaration
 ```
 
-The frontend consumes a same-origin analyzer API. The analyzer backend is intentionally not part of this repository yet; see [`backend/README.md`](backend/README.md) for the boundary and integration note. Live analysis requires a compatible service, and the UI reports service failures rather than substituting demo results. Sample data is available only through the explicit sample-atlas action.
+## Requirements and local setup
 
-## Requirements
-
-- Node.js 22 or a compatible current Node.js release
-- pnpm 11.25.0 (the version declared by `packageManager`)
-
-## Setup and commands
-
-Run these commands from the repository root:
+Use Node.js 22+ and pnpm 11.25.0. From the repository root:
 
 ```sh
 pnpm install
-pnpm dev          # Start the frontend on http://localhost:3000
-pnpm typecheck    # Run TypeScript checks
-pnpm test         # Run the frontend test suite
-pnpm build        # Typecheck, build, and prerender the frontend
-pnpm preview      # Preview the production build on port 3000
+pnpm dev          # API on :3001 and frontend on :3000; Vite proxies /api
+pnpm typecheck
+pnpm test
+pnpm build
 ```
 
-The optional `CODEDARPAN_PUBLIC_ORIGIN` environment variable can be set to the real public HTTPS origin during the build to generate canonical URLs and a sitemap. Leave it unset for local builds; do not use a placeholder domain.
+The API can be started alone with `pnpm --filter @codedarpan/backend dev`. Set `PORT` to change its port. Production requires a same-origin reverse proxy to route `/api` to the API and other paths to the built frontend. Set `CODEDARPAN_PUBLIC_ORIGIN` to the actual HTTPS origin only when building for a public deployment.
 
-## Backend status
+## Analysis conventions
 
-`backend/` is a documented placeholder, not a runnable server. No analyzer, parser, database, authentication, or backend routes are included in this frontend-focused project. Implementing a backend is a separate scope and must follow the API contract consumed by `frontend/src/lib/api.ts` and described in `TODO.md`.
+Imports are directed from importer to dependency. The graph includes file and declared function nodes. Function calls use Babel lexical bindings, local declaration identity, and matching imported/exported function symbols to avoid linking ambiguous same-name functions; dynamic/member/dependency-package calls and unresolved imports remain omitted, so it is not a complete runtime call graph. File token count is a lexical approximation rather than a model tokenizer. Complexity is a cyclomatic estimate, convention `1 + if/loops/catch/ternary/non-default switch cases/logical operators`. The graph's confidence and caveats are static-analysis evidence, not runtime predictions.
+
+ZIP constraints and limitations are described in [`backend/README.md`](backend/README.md). Analysis snapshots persist in SQLite for seven days by default; configure `CODEDARPAN_DB_PATH` and `CODEDARPAN_RETENTION_DAYS`. GitHub health computes bounded churn over up to five recent first-parent commits; ZIP and unavailable history stay unknown, not zero. Public GitHub issue lookup, tailored onboarding, function-level static call edges, and PR changed-file impact are implemented with documented limitations and structural estimates. Account sessions and per-user analysis isolation are available; self-service signup currently has no email verification/password reset. Private GitHub repositories are unsupported. Operators must define deployment retention and privacy controls.
+
+## Deployment and performance checks
+
+The single-origin container configuration is in [`Dockerfile`](Dockerfile), [`compose.yaml`](compose.yaml), and [`backend/DEPLOYMENT.md`](backend/DEPLOYMENT.md). Local gateway/API smoke tests passed in this environment. A Docker image build was not verified because no Docker/Podman daemon is installed here. The isolated Cytoscape harness is [`frontend/scripts/graph-benchmark.html`](frontend/scripts/graph-benchmark.html). A single headless Chrome run rendered 600 nodes/3,000 edges in about 960 ms; action timing is available, but this environment could not produce a credible sustained FPS/paint-complete measure. Do not treat one render sample as a deployment performance guarantee.
+
+## Tools and external services
+
+The application uses React, React DOM, React Router, Vite, TypeScript, Cytoscape.js, highlight.js, lucide-react, Express, Babel parser/traverse/types, Multer, yauzl, and uuid. GitHub public REST API and codeload are used for public repository metadata, snapshots and PR file lists. No AI model is used. Review package manifests and licenses before distribution.
+
+The UI includes a demo atlas explicitly labeled as sample data; live-analysis errors do not fall back to demo content. Privacy/terms pages are drafts and need operator details and legal review before public deployment.

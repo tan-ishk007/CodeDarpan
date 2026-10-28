@@ -8,6 +8,7 @@ export default defineConfig({
     allowedHosts: ['3000-i7c1btki1zs7qsll6p8sf-e5320aa0.sg2.manus.computer'],
     port: 3000,
     strictPort: true,
+    proxy: { '/api': { target: 'http://127.0.0.1:3001', changeOrigin: true } },
   },
   build: {
     sourcemap: false,

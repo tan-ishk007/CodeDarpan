@@ -25,13 +25,15 @@
 - [x] Make inputs, file upload, tabs, menus, graph controls and search keyboard-accessible, with visible focus, readable contrast and useful accessible labels. Below 900px, use selectable Files/Atlas/Details panel tabs instead of compressed columns; prevent clipped controls and text.
 - [x] Add unique title/description metadata, branded 404, privacy and terms review drafts, favicon, Open Graph artwork, robots, sitemap, web manifest, and `GET /manus-routes.json` for `/`, `/workspace`, `/privacy`, `/terms` only. Do not invent the public domain, operator/contact, jurisdiction, backend retention/processing policy or legal guarantees; state the unresolved items and requirement for qualified legal review. Canonical links and `sitemap.xml` are generated only when the owner configures a real HTTPS public origin; neither contains a placeholder domain.
 
-## 5. Frontend-only architecture and delivery
-- [x] Implement a fresh modular React + TypeScript + Vite frontend with a same-origin relative API client restricted to the documented endpoints. Keep typed API contracts in `src/types`, endpoint logic in `src/lib/api.ts`, sample values only in `src/data/demo.ts`, and interface concerns in pages/components/styles.
-- [x] Do not create an analyzer backend, parser, database, authentication/accounts, analytics, cookies, billing, fake live results or undocumented server routes. Live API failures remain visible and never load sample results. WebDev site analytics and Manus badge scripts are disabled in project settings.
-- [x] Keep route manifest and asset references synchronized; run TypeScript diagnostics, the available test suite and production build; verify the configured preview is serving after the UI is implemented. Leave backend/domain/legal-owner dependencies clearly documented.
+## 5. Full-stack architecture and delivery
+- [x] Preserve the modular React + TypeScript + Vite frontend, same-origin API client, typed response validation, explicitly labeled sample data, and visible live API failures.
+- [x] Add a TypeScript/Express analyzer with JS/JSX/TS/TSX Babel parsing, ZIP/public-GitHub intake, normalized import/call graph, SQLite persistence with expiry, source/search/health/onboarding/issue/impact/PR routes, and documented limitations.
+- [x] Add integration tests for real ZIP analysis, graph/source/metrics, ZIP traversal rejection and SQLite process-restart restoration; run all tests, typechecks and production builds. Add a reproducible 500-file/2,500-edge benchmark; reported timings do not include browser graph rendering.
+- [x] Add signed account sessions and owner-scoped analyses, bounded GitHub churn/history evidence, role-/issue-specific onboarding routes, function-level lexical call resolution, a containerized same-origin deployment, and a reproducible browser graph benchmark harness.
+- [ ] Build/publish the image and complete production monitoring, owner privacy/legal review and real-domain configuration. Docker/Podman and a hosting account/domain are unavailable in this environment; do not treat local gateway smoke tests as a deployed production launch.
 
 ## External prerequisites before a public live launch
-- The analyzer backend is not part of this frontend; live repository analysis requires a compatible service implementing the documented same-origin API contracts.
+- The API/analyzer, account-scoped access and single-origin gateway run locally. Container build/publish remains unverified; public deployment still requires infrastructure and a durable encrypted volume.
 - The owner must supply the real HTTPS public origin before canonical URLs and a production sitemap can be emitted.
 - Operator/contact, actual data flows, processing/retention/deletion, jurisdiction and any third-party disclosures remain unresolved; privacy/terms are review drafts and require qualified legal review before launch.
 - Site-level analytics and Manus badge scripts are disabled. Other provider, platform or CDN measurement outside these settings may still exist; this project does not claim that all tracking has stopped.

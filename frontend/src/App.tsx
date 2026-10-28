@@ -5,6 +5,7 @@ import WorkspacePage from './pages/WorkspacePage';
 import { NotFoundPage, PrivacyPage, TermsPage } from './pages/LegalPages';
 import { setPageMeta } from './lib/pageMeta';
 import { AppErrorBoundary } from './components/AppErrorBoundary';
+import AccountPage from './pages/AccountPage';
 
 export type RouteMetaEntry = { title: string; description: string; noIndex?: boolean };
 
@@ -30,6 +31,7 @@ export const routeMeta: Record<string, RouteMetaEntry> = {
     title: 'Terms draft | CodeDarpan',
     description: 'Provisional CodeDarpan terms for an evidence-first repository atlas frontend.',
   },
+  '/account': { title: 'Account access | CodeDarpan', description: 'Sign in to your private CodeDarpan analysis workspace.', noIndex: true },
 };
 
 function RouteMeta() {
@@ -49,6 +51,7 @@ export function AppRoutes() {
       <RouteMeta />
       <Routes>
         <Route path="/" element={<HomePage />} />
+        <Route path="/account" element={<AccountPage />} />
         <Route path="/workspace" element={<WorkspacePage />} />
         <Route path="/workspace/explore" element={<WorkspacePage />} />
         <Route path="/workspace/diagnose" element={<WorkspacePage />} />

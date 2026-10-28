@@ -119,6 +119,7 @@ export default function HomePage() {
         <nav className="site-nav" aria-label="Main navigation">
           <a href="#capabilities">Explore modes</a>
           <a href="#how-it-works">How it works</a>
+          <a href="/account">Account</a>
           <a className="nav-workspace" href="/workspace">Open workspace <ArrowUpRight size={15} /></a>
         </nav>
         <a className="mobile-workspace-link" href="/workspace" aria-label="Open workspace"><ArrowUpRight size={18} /></a>

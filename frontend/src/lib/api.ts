@@ -80,6 +80,10 @@ export async function apiRequest<T extends ApiPayload = ApiPayload>(
 ): Promise<T> {
   const { body, headers: suppliedHeaders, ...init } = options;
   const headers = new Headers(suppliedHeaders);
+  if (typeof window !== 'undefined') {
+    const token = window.sessionStorage.getItem('codedarpan.auth.token');
+    if (token && !headers.has('Authorization')) headers.set('Authorization', `Bearer ${token}`);
+  }
   let requestBody: BodyInit | null | undefined;
 
   if (body && typeof body === 'object' && '__json' in body && body.__json === true) {
