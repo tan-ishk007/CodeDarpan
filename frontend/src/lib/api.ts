@@ -80,8 +80,12 @@ export async function apiRequest<T extends ApiPayload = ApiPayload>(
 ): Promise<T> {
   const { body, headers: suppliedHeaders, ...init } = options;
   const headers = new Headers(suppliedHeaders);
-  // Sessions are carried by the HttpOnly cookie. Never attach a stale token
-  // from browser storage: it can override a newly established session.
+  if (typeof window !== 'undefined') {
+    // The HttpOnly cookie is primary. Keep sending a fresh response token as a
+    // fallback for HTTPS/proxy deployments that block or strip cookies.
+    const token = window.sessionStorage.getItem('codedarpan.auth.token');
+    if (token && !headers.has('Authorization')) headers.set('Authorization', `Bearer ${token}`);
+  }
   let requestBody: BodyInit | null | undefined;
 
   if (body && typeof body === 'object' && '__json' in body && body.__json === true) {
