@@ -97,7 +97,9 @@ export async function apiRequest<T extends ApiPayload = ApiPayload>(
 
   let response: Response;
   try {
-    response = await fetch(path, { ...init, headers, body: requestBody });
+    // Authentication is maintained by the backend's HttpOnly cookie. Explicitly
+    // include credentials so this also works behind a same-origin preview/gateway.
+    response = await fetch(path, { ...init, credentials: 'include', headers, body: requestBody });
   } catch (cause) {
     throw new ApiError('network', 'Could not reach the analyzer API.', { cause });
   }
@@ -115,6 +117,11 @@ export async function apiRequest<T extends ApiPayload = ApiPayload>(
   }
 
   if (!response.ok) {
+    if (response.status === 401 && typeof window !== 'undefined') {
+      // Remove expired tokens from older builds. The HttpOnly cookie remains the
+      // canonical session and cannot be read by JavaScript.
+      window.sessionStorage.removeItem('codedarpan.auth.token');
+    }
     const kind: ApiErrorKind = response.status === 404
       ? 'not-found'
       : response.status === 429
