@@ -1,0 +1,7 @@
+CodeDarpan preview notes
+
+Account / sign-in page: /account
+
+This archive contains the project source and the existing built frontend. The preview served during this session was frontend-only. Email login/account creation requires the backend API to be running; Google sign-in also requires Google OAuth credentials. See README.md for local development setup and backend/.env.example for configuration.
+
+node_modules is intentionally excluded. Install dependencies from the repository root with pnpm install.

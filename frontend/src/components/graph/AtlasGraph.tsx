@@ -59,27 +59,33 @@ const theme = [
       'text-max-width': 112,
       'text-valign': 'center',
       'text-halign': 'center',
-      'background-color': '#f2ebdd',
-      'border-color': '#af8c57',
-      'border-width': 2,
-      width: 122,
-      height: 38,
+      'background-color': '#fffaf0',
+      'border-color': '#9b8055',
+      'border-width': 1.5,
+      width: 136,
+      height: 44,
       'overlay-opacity': 0,
+      'shadow-blur': 9,
+      'shadow-color': '#171513',
+      'shadow-opacity': .22,
+      'shadow-offset-y': 2,
     },
   },
-  { selector: 'node[kind = "file"]', style: { shape: 'round-rectangle', 'background-color': '#f2ebdd', color: '#1d1a18', width: 122, height: 38 } },
-  { selector: 'node[kind = "module"]', style: { shape: 'round-rectangle', 'background-color': '#dfe5df', color: '#1d1a18', width: 106, height: 32 } },
-  { selector: 'node[kind = "function"]', style: { shape: 'ellipse', 'background-color': '#8f3030', color: '#fffaf3', 'font-size': 10, width: 90, height: 29, 'border-color': '#f2ebdd', 'border-width': 1 } },
-  { selector: 'node:selected', style: { 'background-color': '#fffaf3', 'border-color': '#d89a6c', 'border-width': 4, width: 138, height: 48, 'z-index': 10, 'shadow-blur': 18, 'shadow-color': '#d89a6c', 'shadow-opacity': .55 } },
-  { selector: 'node[kind = "function"]:selected', style: { 'background-color': '#b34d47', width: 100, height: 33 } },
+  { selector: 'node[kind = "file"]', style: { shape: 'round-rectangle', 'background-color': '#fffaf0', color: '#201d19', width: 136, height: 44 } },
+  { selector: 'node[kind = "module"]', style: { shape: 'round-rectangle', 'background-color': '#e2e9df', color: '#242b25', width: 122, height: 40, 'border-color': '#748675' } },
+  { selector: 'node[kind = "function"]', style: { shape: 'ellipse', 'background-color': '#9d4542', color: '#fffaf3', 'font-size': 10, width: 100, height: 34, 'border-color': '#f4e7d1', 'border-width': 1.5 } },
+  { selector: 'node.neighborhood-node', style: { 'border-color': '#d9b66f', 'border-width': 3, 'shadow-blur': 14, 'shadow-color': '#d9b66f', 'shadow-opacity': .42 } },
+  { selector: 'node:selected', style: { 'background-color': '#fff1cd', 'border-color': '#e4a94e', 'border-width': 4, width: 148, height: 50, 'z-index': 10, 'shadow-blur': 22, 'shadow-color': '#e4a94e', 'shadow-opacity': .7 } },
+  { selector: 'node[kind = "function"]:selected', style: { 'background-color': '#b34d47', width: 108, height: 37 } },
   { selector: 'node.faded', style: { opacity: 0.23, 'text-opacity': 0.35 } },
   { selector: 'node.search-hit', style: { 'border-color': '#d89a6c', 'border-width': 4, 'z-index': 9 } },
+  { selector: 'node.neighborhood-dim', style: { opacity: .14, 'text-opacity': .18 } },
   {
     selector: 'edge',
     style: {
-      width: 1.6,
-      'line-color': '#9aa69d',
-      'target-arrow-color': '#9aa69d',
+      width: 1.8,
+      'line-color': '#86948c',
+      'target-arrow-color': '#86948c',
       'target-arrow-shape': 'triangle',
       'curve-style': 'bezier',
       'arrow-scale': 0.9,
@@ -91,6 +97,8 @@ const theme = [
   { selector: 'edge[kind = "other"]', style: { 'line-style': 'dotted', 'line-color': '#c3a57b', 'target-arrow-color': '#c3a57b' } },
   { selector: 'edge.faded', style: { opacity: 0.12 } },
   { selector: 'edge.highlighted', style: { width: 4, opacity: 1, 'z-index': 8 } },
+  { selector: 'edge.neighborhood-dim', style: { opacity: .07 } },
+  { selector: 'edge.neighborhood-edge', style: { width: 3.2, opacity: 1, 'line-color': '#e1b75e', 'target-arrow-color': '#e1b75e', 'z-index': 9 } },
 ] as const;
 
 export function AtlasGraph({ nodes, edges, selectedId, highlightedIds = [], onSelect, depth, fitKey, resetKey, focusId, focusKey }: AtlasGraphProps) {
@@ -151,8 +159,19 @@ export function AtlasGraph({ nodes, edges, selectedId, highlightedIds = [], onSe
     if (!cy) return;
     cy.nodes().unselect();
     const selected = cy.getElementById(selectedId ?? '');
-    if (selected.length) selected.select();
-    cy.elements().removeClass('faded search-hit highlighted');
+    cy.elements().removeClass('faded search-hit highlighted neighborhood-dim neighborhood-node neighborhood-edge');
+    if (selected.length) {
+      selected.select();
+      const neighborhood = selected.closedNeighborhood();
+      cy.elements().addClass('neighborhood-dim');
+      neighborhood.removeClass('neighborhood-dim');
+      selected.addClass('neighborhood-node');
+      neighborhood.nodes().addClass('neighborhood-node');
+      neighborhood.edges().addClass('neighborhood-edge');
+      cy.animate({ fit: { eles: neighborhood, padding: 110 }, duration: 420, easing: 'ease-out' });
+    } else {
+      cy.fit(cy.elements(), 48);
+    }
     for (const id of highlightedIds) {
       const element = cy.getElementById(id);
       if (element.length) element.addClass('search-hit');

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import hljs from 'highlight.js/lib/common';
-import { ArrowLeft, ArrowUpRight, ChevronsUpDown, FileCode2, GitBranch, GitFork, LoaderCircle, Maximize2, RotateCcw, Search, ShieldAlert, Sparkles, Waypoints } from 'lucide-react';
+import { ArrowLeft, ArrowUpRight, Expand, FileCode2, GitBranch, GitFork, LoaderCircle, Maximize2, PanelLeft, PanelRight, RotateCcw, Search, ShieldAlert, Shrink, Sparkles, Waypoints, X } from 'lucide-react';
 import { ApiError, getAnalysis, getFile, getGraph, getHealth, getImpact, getIssues, getOnboarding, searchAnalysis, streamAnalysisEvents, submitPrImpact } from '../lib/api';
 import { AtlasGraph, type GraphEdge, type GraphNode } from '../components/graph/AtlasGraph';
 import { FileTree } from '../components/explorer/FileTree';
@@ -133,7 +133,10 @@ export default function WorkspacePage() {
   const initialMode: WorkspaceMode = isWorkspaceMode(requestedMode) ? requestedMode : isWorkspaceMode(routeMode) ? routeMode : 'explore';
   const [mode, setMode] = useState<WorkspaceMode>(demoMode ? initialMode : 'explore');
   const [mobilePane, setMobilePane] = useState<MobilePane>(demoMode && initialMode !== 'explore' ? 'details' : 'atlas');
-  const [selectedId, setSelectedId] = useState(demoMode ? demoNodes[0]?.id ?? '' : '');
+  const [filesPanelOpen, setFilesPanelOpen] = useState(false);
+  const [inspectorOpen, setInspectorOpen] = useState(false);
+  const [graphOnly, setGraphOnly] = useState(false);
+  const [selectedId, setSelectedId] = useState('');
   const [depth, setDepth] = useState(1);
   const [fitKey, setFitKey] = useState(0);
   const [resetKey, setResetKey] = useState(0);
@@ -173,10 +176,17 @@ export default function WorkspacePage() {
   const [onboardingRequest, setOnboardingRequest] = useState<{ role: string; issueUrl?: string }>({ role: 'contributor' });
 
   useEffect(() => {
+    if (!graphOnly) return;
+    const closeOnEscape = (event: KeyboardEvent) => { if (event.key === 'Escape') setGraphOnly(false); };
+    window.addEventListener('keydown', closeOnEscape);
+    return () => window.removeEventListener('keydown', closeOnEscape);
+  }, [graphOnly]);
+
+  useEffect(() => {
     snapshotRef.current = null;
     setSnapshot(null);
     setEventNotice('');
-    setSelectedId(demoMode ? demoNodes[0]?.id ?? '' : '');
+    setSelectedId('');
     setFocusId('');
     setFileFilter('');
     setNodes(demoMode ? demoNodes : []);
@@ -627,18 +637,21 @@ export default function WorkspacePage() {
           {(['files', 'atlas', 'details'] as MobilePane[]).map((pane) => <button key={pane} type="button" role="tab" aria-selected={mobilePane === pane} onClick={() => setMobilePane(pane)}>{pane === 'files' ? 'Files' : pane === 'atlas' ? 'Atlas' : 'Details'}</button>)}
         </div>
 
-        <div className={`workspace-grid active-${mobilePane}`}>
+        <div className={`workspace-grid active-${mobilePane}${filesPanelOpen ? ' show-files' : ''}${inspectorOpen ? ' show-inspector' : ''}${graphOnly ? ' is-graph-focused' : ''}`}>
           <aside className="workspace-files workspace-column">
-            <div className="rail-search"><Search size={14} /><input aria-label="Filter returned files" placeholder="Filter file paths" value={fileFilter} onChange={(event) => setFileFilter(event.target.value)} /></div>
+            <div className="rail-search"><Search size={14} /><input aria-label="Filter returned files" placeholder="Filter file paths" value={fileFilter} onChange={(event) => setFileFilter(event.target.value)} /><button type="button" className="drawer-close" aria-label="Close file paths drawer" onClick={() => setFilesPanelOpen(false)}><X size={15} /></button></div>
             <FileTree nodes={displayNodes} selectedId={selectedId} query={fileFilter} onSelect={selectNode} />
             <div className="file-rail-foot"><span><GitFork size={13} /> Dependency direction</span><p>Arrows follow the returned relationship.</p></div>
           </aside>
 
           <section className="workspace-atlas workspace-column" aria-label="Dependency atlas panel">
             <div className="atlas-toolbar"><div className="atlas-toolbar-label"><Waypoints size={15} /><span>FILE RELATIONSHIPS</span></div><div className="atlas-actions">
+              <button type="button" className={`drawer-toggle${filesPanelOpen ? ' is-active' : ''}`} aria-pressed={filesPanelOpen} onClick={() => { setMobilePane('atlas'); setFilesPanelOpen((open) => !open); }}><PanelLeft size={14} /> File paths</button>
+              <button type="button" className={`drawer-toggle${inspectorOpen ? ' is-active' : ''}`} aria-pressed={inspectorOpen} onClick={() => { setMobilePane('atlas'); setInspectorOpen((open) => !open); }}><PanelRight size={14} /> Inspector</button>
               {!demoMode && <label className="depth-control">Depth <select value={depth} onChange={(event) => setDepth(Number(event.target.value))} aria-label="Graph depth"><option value={1}>1</option><option value={2}>2</option><option value={3}>3</option></select></label>}
               <button type="button" className="icon-button" aria-label="Fit graph to view" title="Fit graph to view" onClick={() => setFitKey((key) => key + 1)}><Maximize2 size={15} /></button>
               <button type="button" className="icon-button" aria-label="Reset graph layout" title="Reset graph layout" onClick={() => setResetKey((key) => key + 1)}><RotateCcw size={15} /></button>
+              <button type="button" className="drawer-toggle graph-focus-toggle" aria-pressed={graphOnly} onClick={() => setGraphOnly((focused) => !focused)}>{graphOnly ? <Shrink size={14} /> : <Expand size={14} />}{graphOnly ? 'Exit full screen' : 'Full screen graph'}</button>
             </div></div>
             <div className="atlas-filter-row" aria-label="Graph filters">
               <label>Language <select value={graphFilters.language} onChange={(event) => setGraphFilters((current) => ({ ...current, language: event.target.value }))}><option value="all">All</option>{graphFilterOptions.languages.map((language) => <option key={language} value={language}>{language}</option>)}</select></label>
@@ -658,7 +671,7 @@ export default function WorkspacePage() {
           </section>
 
           <aside className="workspace-details workspace-column">
-            <div className="details-panel-heading"><span>{mode === 'explore' ? 'SOURCE INSPECTOR' : `${mode.toUpperCase()} EVIDENCE`}</span><ChevronsUpDown size={14} /></div>
+            <div className="details-panel-heading"><span>{mode === 'explore' ? 'SOURCE INSPECTOR' : `${mode.toUpperCase()} EVIDENCE`}</span><button type="button" className="drawer-close" aria-label="Close source inspector drawer" onClick={() => setInspectorOpen(false)}><X size={15} /></button></div>
             {mode === 'explore' ? (
               <>
                 <div className="selected-file-heading"><FileCode2 size={15} /><code>{selectionLabel}</code></div>
@@ -673,7 +686,7 @@ export default function WorkspacePage() {
                   {demoSource && <RelationshipList label="Dependents" items={demoSource.dependents} nodes={nodes} onSelectNode={openNode} />}
                   {!demoMode && sourceImports !== null && <RelationshipList label="Imports" items={sourceImports} nodes={nodes} onSelectNode={openNode} />}
                   {!demoMode && sourceDependents !== null && <RelationshipList label="Dependents" items={sourceDependents} nodes={nodes} onSelectNode={openNode} />}
-                </> : <div className="detail-empty"><ShieldAlert size={18} /><p>{demoMode ? 'No illustrative source fixture is attached to this node.' : 'Source is unavailable until the analyzer returns source for the selected file.'}</p></div>}
+                </> : <div className="detail-empty"><ShieldAlert size={18} /><p>{demoMode ? (activeNode ? 'No illustrative source fixture is attached to this node.' : 'Select a graph node or file path to inspect an illustrative source example.') : 'Source is unavailable until the analyzer returns source for the selected file.'}</p></div>}
               </>
             ) : (
               <EvidencePanel mode={mode} demoMode={demoMode} loading={panelLoading} error={panelError} evidence={panelEvidence} issues={issues} selectedPath={selectionLabel} nodes={nodes} onSelectNode={openNode} onPrSubmit={handlePrImpact} prUrl={prUrl} setPrUrl={setPrUrl} prLoading={prLoading} prError={prError} prEvidence={prEvidence} onboardingRole={onboardingRole} setOnboardingRole={setOnboardingRole} onboardingIssueUrl={onboardingIssueUrl} setOnboardingIssueUrl={setOnboardingIssueUrl} onOnboardingSubmit={handleOnboardingSubmit} />
