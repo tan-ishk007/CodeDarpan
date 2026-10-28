@@ -542,3 +542,120 @@
 .opening-splash__edge--left { left: 5%; }
 .opening-splash__edge--right { right: 5%; display: inline-flex; align-items: center; gap: 8px; color: #d0a866; }
 @media (max-width: 760px) { .opening-splash__curtain { width: 50.5%; } .opening-splash__curtain--left { padding-right: 7vw; } .opening-splash__curtain--right { padding-left: 7vw; } .opening-splash__title { width: 92vw; } .opening-splash__title h2 { font-size: clamp(62px, 17vw, 110px); } .opening-splash__edge--left { left: 4%; font-size: 7px; } .opening-splash__edge--right { right: 4%; font-size: 7px; } }
+
+/* Scroll-controlled royal curtain palette: ivory stage, oxblood velvet and antique gold. */
+.opening-splash { background: #f3e9da; color: #2e2924; }
+.opening-splash::before { opacity: .22; background-image: radial-gradient(circle at 20% 50%, #af8c57 0 1px, transparent 1.5px), linear-gradient(90deg, transparent 49.8%, rgba(143,48,48,.16) 50%, transparent 50.2%); }
+.opening-splash__curtain { background: linear-gradient(135deg, #6f3036 0%, #4c252d 100%); box-shadow: inset 0 0 0 1px rgba(227,195,131,.36); }
+.opening-splash__curtain--right { background: linear-gradient(225deg, #6f3036 0%, #4c252d 100%); }
+.opening-splash__curtain::before { background: rgba(227,195,131,.54); }
+.opening-splash__curtain span { color: #f0d28e; }
+.opening-splash__curtain i { background: linear-gradient(90deg, transparent, #e3c383); }
+.opening-splash__title { color: #2e2924; }
+.opening-splash__title > span, .opening-splash__title p { color: #8f3030; }
+.opening-splash__title h2 { text-shadow: 0 10px 0 rgba(175,140,87,.14); }
+.opening-splash__title em { color: #8f3030; }
+.opening-splash__title p { color: #6c6258; }
+.opening-splash__center-line { background: linear-gradient(90deg, transparent, rgba(143,48,48,.55), rgba(175,140,87,.7), transparent); }
+.opening-splash__edge { color: #55453a; }
+.opening-splash__edge--right { color: #8f3030; }
+
+/* Actual graph architecture: towers, bridges and an engraved central ring, not decorative photos. */
+.journey-structural-figures { opacity: .95; filter: drop-shadow(0 9px 7px rgba(78,58,33,.14)); }
+.structure-side { fill: #b99a6a; stroke: #8d6d3e; stroke-width: 1; }
+.structure-face { fill: #ead6b3; stroke: #af8c57; stroke-width: 1.6; }
+.journey-structural-figures path:not(.structure-side):not(.structure-face) { fill: none; stroke: #8f3030; stroke-width: 1.5; }
+.structure-ring ellipse { fill: none; stroke: #af8c57; stroke-width: 3; stroke-dasharray: 2 7; }
+.structure-ring ellipse:nth-child(2) { stroke: #8f3030; stroke-width: 1.5; stroke-dasharray: 1 5; }
+.structure-tower, .structure-bridge { transform-origin: center; animation: structure-float 8s ease-in-out infinite; }
+.structure-bridge { animation-delay: -3s; }
+@keyframes structure-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+.mode-card { will-change: transform, opacity; }
+.capabilities-section .mode-grid { perspective: 1200px; }
+@media (prefers-reduced-motion: reduce) { .structure-tower, .structure-bridge { animation: none; } }
+
+/* Luxury midnight opening: stronger contrast than the previous oxblood curtain. */
+.opening-splash { background: #f5eee2; }
+.opening-splash::before { background-image: radial-gradient(circle at 20% 50%, #b99752 0 1px, transparent 1.5px), linear-gradient(90deg, transparent 49.8%, rgba(20,35,52,.13) 50%, transparent 50.2%); }
+.opening-splash__curtain, .opening-splash__curtain--right { background: linear-gradient(135deg, #15263a 0%, #0b1625 72%, #1d3048 100%); box-shadow: inset 0 0 0 1px rgba(226,193,121,.5); }
+.opening-splash__curtain--right { background: linear-gradient(225deg, #15263a 0%, #0b1625 72%, #1d3048 100%); }
+.opening-splash__curtain::before { background: rgba(226,193,121,.7); }
+.opening-splash__curtain span { color: #efd28a; }
+.opening-splash__curtain i { background: linear-gradient(90deg, transparent, #efd28a); }
+.opening-splash__title h2 { color: #172334; text-shadow: 0 10px 0 rgba(185,151,82,.17); }
+.opening-splash__title > span, .opening-splash__title p { color: #7f6330; }
+.opening-splash__title em { color: #9c7131; }
+.opening-splash__center-line { background: linear-gradient(90deg, transparent, rgba(19,43,68,.66), rgba(185,151,82,.86), transparent); }
+.opening-splash__edge { color: #334355; }
+.opening-splash__edge--right { color: #7f6330; }
+/* Large connected object-pods: each is a raised top, a visible side, an orb and engraved detail. */
+.journey-figure-pods { filter: drop-shadow(0 11px 8px rgba(68,49,24,.2)); }
+.journey-figure-pods .pod-shadow { fill: rgba(104,76,39,.28); stroke: none; }
+.journey-figure-pods .pod-side { fill: #ae8b54; stroke: #80602e; stroke-width: 1; }
+.journey-figure-pods .pod-top { fill: #ead5aa; stroke: #b99752; stroke-width: 1.8; }
+.journey-figure-pods .pod-orb { fill: #f8efe0; stroke: #8f3030; stroke-width: 2; }
+.journey-figure-pods .pod-detail { fill: none; stroke: #8f3030; stroke-width: 1.5; }
+.journey-dimensional-links .link-shadow { fill: none; stroke: rgba(92,64,31,.28); stroke-width: 10; stroke-linecap: round; transform: translateY(7px); }
+.journey-links path { stroke-width: 3.6; filter: drop-shadow(0 2px 1px rgba(82,55,25,.18)); }
+
+/* Translucent staged curtain: holds the program, opens slowly, then clears completely. */
+.opening-splash { background: rgba(245,238,226,.7); backdrop-filter: blur(16px) saturate(.9); -webkit-backdrop-filter: blur(16px) saturate(.9); will-change: opacity; }
+.opening-splash__curtain, .opening-splash__curtain--right { background: linear-gradient(135deg, rgba(21,38,58,.91) 0%, rgba(11,22,37,.88) 72%, rgba(29,48,72,.9) 100%); will-change: transform; }
+.opening-splash__title { will-change: opacity; }
+.opening-splash__edge { text-shadow: 0 1px 0 rgba(245,238,226,.65); }
+
+/* Ivory luxury opening with the diagonal watermark restored. */
+.opening-splash { background: rgba(246,240,230,.78); backdrop-filter: blur(12px) saturate(.86); -webkit-backdrop-filter: blur(12px) saturate(.86); }
+.opening-splash::before { opacity: .2; background-image: radial-gradient(circle at 20% 50%, #af8c57 0 1px, transparent 1.5px), linear-gradient(90deg, transparent 49.8%, rgba(61,49,39,.1) 50%, transparent 50.2%); }
+.opening-splash__curtain, .opening-splash__curtain--right { background: linear-gradient(135deg, rgba(253,249,241,.96), rgba(237,226,207,.91)); box-shadow: inset 0 0 0 1px rgba(175,140,87,.5), 0 20px 55px rgba(78,58,33,.12); }
+.opening-splash__curtain--right { background: linear-gradient(225deg, rgba(253,249,241,.96), rgba(237,226,207,.91)); }
+.opening-splash__curtain::before { background: rgba(143,48,48,.42); }
+.opening-splash__curtain span { color: #8f3030; }
+.opening-splash__curtain i { background: linear-gradient(90deg, transparent, #af8c57); }
+.opening-splash__title h2 { color: #27221e; text-shadow: 0 9px 0 rgba(175,140,87,.18); }
+.opening-splash__title > span, .opening-splash__title p { color: #8f3030; }
+.opening-splash__title em { color: #8f3030; }
+.opening-splash__watermark { position: absolute; z-index: 1; top: 43%; left: -12%; width: 124%; color: rgba(143,48,48,.095); font: 400 clamp(60px, 12vw, 190px)/.8 var(--display); letter-spacing: -.065em; white-space: nowrap; transform: rotate(-12deg); pointer-events: none; }
+.opening-splash__center-line { z-index: 5; background: linear-gradient(90deg, transparent, rgba(143,48,48,.45), rgba(175,140,87,.7), transparent); }
+.opening-splash__edge { color: #574b41; }
+.opening-splash__edge--right { color: #8f3030; }
+
+/* Modeled graph nodes: bevel-like rings, metallic gradients and specular highlights. */
+.journey-story-cinema .journey-node circle:first-child { fill: url(#node-metal); stroke: #8e692f; stroke-width: 3; }
+.journey-story-cinema .journey-node--b circle:first-child { fill: url(#node-ivory); stroke: #8f3030; stroke-width: 4.5; }
+.journey-story-cinema .journey-node .node-ring { fill: none; stroke: rgba(250,238,203,.86); stroke-width: 2; stroke-dasharray: 2 6; }
+.journey-story-cinema .journey-node text { fill: #38291c; font-weight: 700; paint-order: stroke; stroke: rgba(250,244,229,.6); stroke-width: 1px; }
+.journey-story-cinema .journey-node--b text { fill: #7c2729; }
+.journey-story-cinema .journey-packets circle { fill: #f7dda0; stroke: #8f3030; stroke-width: 2; filter: drop-shadow(0 3px 3px rgba(78,58,33,.25)); }
+
+/* The opening owns its own viewport; the main hero follows it instead of scrolling behind it. */
+.opening-splash-shell { position: relative; z-index: 20; height: 100vh; }
+.opening-splash-shell .opening-splash { position: sticky; top: 0; inset: auto; height: 100vh; pointer-events: none; }
+
+/* Visual graph nodes: the atlas artwork itself is the node, and pipes connect its ports. */
+.journey-image-pipes { position: absolute; z-index: 4; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+.journey-image-pipes path { fill: none; stroke: rgba(77,53,25,.28); stroke-width: 12; stroke-linecap: round; transform: translateY(7px); }
+.journey-image-pipes path + path { stroke: url(#image-pipe); stroke-width: 5; transform: none; }
+.journey-image-pipes path { stroke: url(#image-pipe); stroke-width: 5; transform: none; }
+.journey-image-pipes .pipe-packet { r: 5; fill: #fff0b8; stroke: #8f3030; stroke-width: 2; filter: drop-shadow(0 3px 4px rgba(78,58,33,.3)); }
+.journey-image-nodes { position: absolute; z-index: 7; inset: 0; perspective: 1400px; pointer-events: none; }
+.journey-image-node { position: absolute; width: clamp(132px, 15vw, 218px); transform-style: preserve-3d; filter: drop-shadow(14px 18px 0 rgba(175,140,87,.16)) drop-shadow(0 17px 24px rgba(62,43,22,.23)); }
+.journey-image-node__frame { position: relative; overflow: hidden; aspect-ratio: 1.26 / 1; border: 2px solid #b99752; background: #efe0c4; transform: rotateX(5deg) rotateY(-7deg); }
+.journey-image-node__frame::before { position: absolute; z-index: 2; inset: 7px; border: 1px solid rgba(255,248,232,.78); content: ''; pointer-events: none; }
+.journey-image-node__frame::after { position: absolute; z-index: 2; right: 10px; bottom: 9px; width: 9px; height: 9px; border: 2px solid #f0d28e; border-radius: 50%; background: #8f3030; box-shadow: 0 0 0 4px rgba(143,48,48,.16); content: ''; }
+.journey-image-node img { display: block; width: 100%; height: 100%; object-fit: cover; filter: saturate(.84) contrast(1.05); }
+.journey-image-node__port { position: absolute; z-index: 3; top: 50%; width: 12px; height: 12px; border: 2px solid #8f3030; border-radius: 50%; background: #f7df9e; transform: translateY(-50%); }
+.journey-image-node--north-west .journey-image-node__port, .journey-image-node--south-west .journey-image-node__port { right: -8px; }
+.journey-image-node--north-east .journey-image-node__port, .journey-image-node--south-east .journey-image-node__port { left: -8px; }
+.journey-image-node__label { display: block; margin-top: 8px; color: #8f3030; font: 9px var(--mono); letter-spacing: .08em; }
+.journey-image-node--north-west { top: 11%; left: 7%; }
+.journey-image-node--north-east { top: 11%; right: 7%; }
+.journey-image-node--south-west { bottom: 10%; left: 7%; }
+.journey-image-node--south-east { right: 7%; bottom: 10%; }
+.journey-image-node--core { top: 50%; left: 50%; width: clamp(168px, 20vw, 285px); transform: translate(-50%, -50%) translateZ(100px); }
+.journey-image-node--core .journey-image-node__frame { aspect-ratio: 1.5 / 1; border-color: #8f3030; transform: rotateX(3deg); }
+.journey-image-node--core .journey-image-node__port { display: none; }
+.journey-image-node--core .journey-image-node__label { text-align: center; color: #8f3030; }
+.journey-story-cinema .journey-node { opacity: .08; }
+@media (max-width: 900px) { .journey-image-node { width: 118px; } .journey-image-node--core { width: 150px; } .journey-image-node--north-west, .journey-image-node--south-west { left: 2%; } .journey-image-node--north-east, .journey-image-node--south-east { right: 2%; } }
+@media (max-width: 560px) { .journey-image-node { width: 92px; } .journey-image-node--core { width: 128px; } .journey-image-node__label { font-size: 7px; } }

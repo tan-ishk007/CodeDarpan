@@ -1,6 +1,6 @@
 import { useRef, useState, type DragEvent, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import { ArrowDown, ArrowRight, ArrowUpRight, Check, FileArchive, Github, Layers3, Network, Search, ShieldAlert } from 'lucide-react';
 import { ApiError, submitGitHubAnalysis, submitZipAnalysis } from '../lib/api';
 import { Brand } from '../components/Brand';
@@ -197,16 +197,23 @@ export default function HomePage() {
 }
 
 function OpeningBanner() {
+  const bannerRef = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({ target: bannerRef, offset: ['start start', 'end start'] });
+  const leftX = useTransform(scrollYProgress, [0, .66], ['0%', '-102%']);
+  const rightX = useTransform(scrollYProgress, [0, .66], ['0%', '102%']);
+  const splashOpacity = useTransform(scrollYProgress, [0, .66, .9, 1], [1, 1, .92, 0]);
+  const titleOpacity = useTransform(scrollYProgress, [0, .42, .7], [1, .88, 0]);
   return (
-    <motion.section className="opening-splash" aria-labelledby="opening-banner-title" initial={{ opacity: 1 }} animate={{ opacity: [1, 1, 0] }} transition={{ duration: 3.15, times: [0, .86, 1], ease: 'easeInOut' }}>
-      <motion.div className="opening-splash__curtain opening-splash__curtain--left" initial={{ x: 0 }} animate={{ x: '-102%' }} transition={{ delay: 1.45, duration: 1.35, ease: [0.76, 0, .24, 1] }}><span>CODEDARPAN</span><i /></motion.div>
-      <motion.div className="opening-splash__curtain opening-splash__curtain--right" initial={{ x: 0 }} animate={{ x: '102%' }} transition={{ delay: 1.45, duration: 1.35, ease: [0.76, 0, .24, 1] }}><span>LIVE ATLAS</span><i /></motion.div>
-      <motion.div className="opening-splash__title" initial={{ opacity: 0, scale: .92, y: 22 }} animate={{ opacity: [0, 1, 1, 0], scale: [ .92, 1, 1.02, 1.05 ], y: [22, 0, 0, -18] }} transition={{ duration: 2.6, times: [0, .22, .64, 1], ease: [0.16, 1, .3, 1] }}>
-        <span>PROGRAM / 01</span><h2 id="opening-banner-title">How to understand<br /><em>a repo.</em></h2><p>Structure / relation / context</p>
+    <section ref={bannerRef} className="opening-splash-shell" aria-label="Opening program">
+      <motion.div className="opening-splash" aria-labelledby="opening-banner-title" style={{ opacity: splashOpacity }}>
+        <motion.div className="opening-splash__curtain opening-splash__curtain--left" style={{ x: leftX }}><span>CODEDARPAN</span><i /></motion.div>
+        <motion.div className="opening-splash__curtain opening-splash__curtain--right" style={{ x: rightX }}><span>LIVE ATLAS</span><i /></motion.div>
+        <motion.div className="opening-splash__title" style={{ opacity: titleOpacity }}><span>PROGRAM / 01</span><h2 id="opening-banner-title">How to understand<br /><em>a repo.</em></h2><p>Structure / relation / context</p></motion.div>
+        <motion.div className="opening-splash__watermark" animate={{ x: ['-8%', '8%', '-8%'] }} transition={{ duration: 18, repeat: Infinity, ease: 'easeInOut' }}>HOW TO UNDERSTAND A REPO&nbsp;&nbsp;&nbsp; / &nbsp;&nbsp;&nbsp;HOW TO UNDERSTAND A REPO</motion.div>
+        <motion.div className="opening-splash__center-line" initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} transition={{ delay: .45, duration: .75, ease: [0.16, 1, .3, 1] }} />
+        <span className="opening-splash__edge opening-splash__edge--left">FILES / SYMBOLS / RELATIONSHIPS</span><span className="opening-splash__edge opening-splash__edge--right">SCROLL TO ENTER THE ATLAS <ArrowDown size={14} /></span>
       </motion.div>
-      <motion.div className="opening-splash__center-line" initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} transition={{ delay: .45, duration: .75, ease: [0.16, 1, .3, 1] }} />
-      <span className="opening-splash__edge opening-splash__edge--left">FILES / SYMBOLS / RELATIONSHIPS</span><span className="opening-splash__edge opening-splash__edge--right">ENTER THE ATLAS <ArrowDown size={14} /></span>
-    </motion.section>
+    </section>
   );
 }
 
