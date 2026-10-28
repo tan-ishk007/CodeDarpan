@@ -1,7 +1,10 @@
-CodeDarpan preview notes
+CodeDarpan final project notes
 
 Account / sign-in page: /account
+Sample workspace: /workspace?demo=1
 
-This archive contains the project source and the existing built frontend. The preview served during this session was frontend-only. Email login/account creation requires the backend API to be running; Google sign-in also requires Google OAuth credentials. See README.md for local development setup and backend/.env.example for configuration.
+This archive contains the updated frontend source, production build, backend source, and project documentation. The local static preview used for visual checks served only the frontend; run the API as described in README.md for live repository ingestion and analysis. Google sign-in requires Google OAuth credentials. The current public deployment requires sign-in before analysis, but it has not been redeployed with the changes in this archive.
+
+The backend stores analysis source and results in SQLite. Review README.md, BENCHMARK.md, and TOOLS_AND_SERVICES.md for data handling, measured tests, known unmeasured performance targets, and external-service disclosure. The deployment owner must add a legal identity and contact details and confirm its provider-specific retention/logging settings before public use.
 
 node_modules is intentionally excluded. Install dependencies from the repository root with pnpm install.

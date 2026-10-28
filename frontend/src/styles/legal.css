@@ -5,7 +5,7 @@
 .legal-page__eyebrow, .not-found-page__eyebrow { margin: 0 0 10px; color: var(--oxblood); font: 9px var(--mono); letter-spacing: .12em; text-transform: uppercase; }
 .legal-page__title, .not-found-page__title { margin: 0; font: 400 clamp(42px, 6vw, 62px)/1 var(--display); letter-spacing: -.025em; }
 .legal-page__intro { max-width: 610px; margin: 13px 0 0; color: var(--muted); font-size: 13px; line-height: 1.8; }
-.legal-page__draft-notice { display: inline-block; margin: 18px 0 0; padding: 8px 10px; border: 1px solid rgba(143,48,48,.3); background: #f7eeea; color: #71302d; font-size: 10px; }
+.legal-page__notice { display: inline-block; margin: 18px 0 0; padding: 9px 11px; border: 1px solid rgba(175,140,87,.45); background: #f8f3e8; color: var(--soft-ink); font-size: 10px; line-height: 1.65; }
 .legal-page__content { padding: 12px 0; }
 .legal-page__section { padding: 20px 0; border-bottom: 1px solid var(--border); }
 .legal-page__section h2 { margin: 0 0 9px; font: 400 26px/1.1 var(--display); }

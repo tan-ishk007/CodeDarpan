@@ -21,8 +21,8 @@ function LegalLayout({
         <p className="legal-page__eyebrow">{eyebrow}</p>
         <h1 className="legal-page__title">{title}</h1>
         <p className="legal-page__intro">{intro}</p>
-        <p className="legal-page__draft-notice" role="note">
-          Review draft — not approved for launch. Qualified professional review is required before launch.
+        <p className="legal-page__notice" role="note">
+          Last updated October 28, 2026. The deployment owner must keep this notice aligned with its actual hosting, retention, and contact settings.
         </p>
       </header>
       <div className="legal-page__content">{children}</div>
@@ -44,42 +44,52 @@ export function PrivacyPage() {
     <LegalLayout
       eyebrow="CodeDarpan · Privacy"
       title="Privacy notice"
-      intro="This draft identifies what is and is not established about the CodeDarpan frontend. It is not a final description of service-side data practices."
+      intro="This notice describes the information the CodeDarpan application is designed to process, what its current source code stores, and the deployment details that remain the responsibility of the service operator."
     >
-      <section className="legal-page__section" aria-labelledby="privacy-product">
-        <h2 id="privacy-product">What this product currently includes</h2>
+      <section className="legal-page__section" aria-labelledby="privacy-data">
+        <h2 id="privacy-data">Information processed</h2>
         <p>
-          CodeDarpan is being built as a browser frontend for exploring repository structure. Its documented interface can accept a GitHub repository URL and optional ref, or a ZIP file, for a live submission. It also offers a separately and explicitly selected sample atlas; that sample is local illustrative data, not the result of analyzing a submitted repository.
+          For a live analysis, the service receives the public GitHub repository URL and optional branch, tag, or commit, or the ZIP archive you submit. It fetches or reads supported source files and derives file and symbol records, dependency relationships, search results, code metrics, and analysis summaries. The parser reads source; it does not execute submitted code. The separately selected sample atlas is illustrative data and is not derived from your repository.
         </p>
         <p>
-          The current deployment includes a same-origin analyzer service for public GitHub repositories and ZIP uploads. This draft still does not establish how the operator, hosting provider, logs, backups, or other service components receive, process, store, retain, or delete submitted information.
-        </p>
-      </section>
-
-      <section className="legal-page__section" aria-labelledby="privacy-unknowns">
-        <h2 id="privacy-unknowns">Important details remain unresolved</h2>
-        <p>
-          This review draft cannot say whether or how submissions are transmitted beyond the browser, processed, stored, retained, backed up, or deleted. Data location, retention periods, deletion procedures, service operators, subprocessors or other third-party processing, and any associated access or security practices have not been established. Hosting logs and other deployment-level handling are also unknown.
-        </p>
-        <p>
-          The product operator and privacy contact have not been identified. The public domain, applicable jurisdiction, and any future analytics or other measurement practices are also unresolved. This draft makes no promise about collection, confidentiality, security, retention, deletion, or data location. Do not treat the sample atlas as evidence of how submitted repository data is handled.
+          If you create an account, the service stores your email address and a salted password hash. If Google sign-in is configured, it uses the verified email identity returned through Google OAuth. Session tokens are placed in an HttpOnly cookie. The API also stores the account identifier, repository/ref, analysis metadata, source contents, and derived results needed to reopen an analysis.
         </p>
       </section>
 
-      <section className="legal-page__section" aria-labelledby="privacy-before-use">
-        <h2 id="privacy-before-use">Before using a live service</h2>
+      <section className="legal-page__section" aria-labelledby="privacy-storage">
+        <h2 id="privacy-storage">Processing and storage</h2>
         <p>
-          Until the operator publishes reviewed, deployment-specific disclosures, users should not assume that submitting a repository or archive is private or that any particular deletion or retention process applies. Whether a repository is public or private does not resolve the unknown handling of a submission by a future compatible backend.
+          Repository retrieval and analysis run on the CodeDarpan backend. GitHub URLs are resolved through GitHub's API and archive service. ZIP contents are checked for unsafe paths, supported file extensions, file-count limits, and expanded-size limits before parsing. Analysis records, including source contents, are serialized into a SQLite database on the backend. Account records are stored in that database as well.
         </p>
         <p>
-          The operator must confirm actual data flows and service configuration, identify responsible contacts and third parties, and provide accurate retention, deletion, location, and analytics disclosures before launch. This page must then be reviewed and updated to match the deployed product.
+          The backend's default analysis retention is seven days, configurable with <code>CODEDARPAN_RETENTION_DAYS</code>. In the current implementation, expired records are purged when the API process starts; there is no self-service delete control or guaranteed immediate deletion endpoint. The deployment may override the default. Hosting-provider logs, backups, database location, and provider retention settings are controlled outside this source code and are not specified here.
         </p>
       </section>
 
-      <section className="legal-page__section" aria-labelledby="privacy-review">
-        <h2 id="privacy-review">Review status</h2>
+      <section className="legal-page__section" aria-labelledby="privacy-access">
+        <h2 id="privacy-access">Access and third parties</h2>
         <p>
-          This is an implementation-stage review draft, not legal advice or a final privacy notice. Qualified professional review is required before launch. See the <a href="/terms">Terms draft</a> for related product-use context, or return to <a href="/">CodeDarpan home</a>.
+          Analysis access can be restricted to the signed-in account when <code>CODEDARPAN_REQUIRE_AUTH</code> is enabled. The current public deployment requires sign-in for analysis submissions; its unauthenticated analysis endpoint returns HTTP 401. The public health endpoint reports API reachability and does not expose repository source. Google and GitHub are contacted only for the corresponding sign-in or repository features; provider-side handling is governed by those providers' own terms and privacy policies.
+        </p>
+        <p>
+          The source code does not configure a separate analytics product. This does not rule out hosting-platform operational logs. The project does not identify the deployment owner's legal name, privacy contact, hosting region, or backup policy; the operator must publish those details for the deployment they run.
+        </p>
+      </section>
+
+      <section className="legal-page__section" aria-labelledby="privacy-controls">
+        <h2 id="privacy-controls">Your choices and safe use</h2>
+        <p>
+          Submit only repositories and archives you have permission to share with the service, and avoid including secrets, credentials, or other sensitive material. Public GitHub access is supported; private repository authorization is not. Because analysis source is stored with its result until retention cleanup, do not treat a submission as confidential. There is no self-service account or analysis deletion flow in this version; contact the service operator through the contact channel published by the deployment owner for data requests.
+        </p>
+        <p>
+          The sample atlas contains fixed illustrative data. It is not a live analysis, and it does not contain source submitted by another user.
+        </p>
+      </section>
+
+      <section className="legal-page__section" aria-labelledby="privacy-operator">
+        <h2 id="privacy-operator">Service operator</h2>
+        <p>
+          The project source does not provide a verified legal entity name, postal address, or privacy email. The organization or person publishing a deployment must add its identity and a working privacy contact before accepting repository submissions. This notice describes software behavior; it is not legal advice. See the <a href="/terms">Terms of use</a> or return to <a href="/">CodeDarpan home</a>.
         </p>
       </section>
     </LegalLayout>
@@ -91,49 +101,49 @@ export function TermsPage() {
     <LegalLayout
       eyebrow="CodeDarpan · Terms"
       title="Terms of use"
-      intro="These provisional terms describe the intended frontend experience while making clear that material service, operator, and legal details have not yet been settled."
+      intro="Use CodeDarpan only with repositories and archives you are authorized to submit. Its atlas is a static, evidence-based aid—not a guarantee of software behavior."
     >
-      <section className="legal-page__section" aria-labelledby="terms-draft">
-        <h2 id="terms-draft">Draft status and scope</h2>
+      <section className="legal-page__section" aria-labelledby="terms-use">
+        <h2 id="terms-use">Permitted submissions</h2>
         <p>
-          This page is a review draft for a deployed analyzer and browser workspace. It is not a final contract and does not establish an operator, governing law, jurisdiction, dispute process, or legal guarantee. Those matters remain unresolved. Qualified professional review is required before public launch.
+          You may submit a public GitHub repository URL and optional ref, or a ZIP archive, only if you have the right to provide its contents for processing. Do not submit credentials, secrets, personal information, malware, or material you are not authorized to share. Private GitHub repository access is not supported. On the current public deployment, you must sign in or create an account before starting an analysis.
+        </p>
+        <p>
+          ZIP uploads are limited by the backend to 25 MiB compressed, up to 5,000 supported source files, 100 MiB total expanded source, and 2 MiB per file. Unsupported files are skipped or reported. These limits may change with a later release.
         </p>
       </section>
 
       <section className="legal-page__section" aria-labelledby="terms-function">
-        <h2 id="terms-function">What the interface is designed to do</h2>
+        <h2 id="terms-function">What the service does</h2>
         <p>
-          The documented frontend provides an entry point for a GitHub repository URL with an optional ref, a ZIP upload/drop interaction, and an explicitly chosen sample atlas. In a live workspace, the interface is intended to present information returned by a compatible analyzer service. It should report unavailable, partial, or failed service states rather than inventing analysis or silently substituting sample results.
+          The analyzer resolves supported public GitHub archives or reads submitted ZIPs, parses eligible source files, and returns a graph, source context, search results, token and complexity estimates, and structural evidence. JavaScript, JSX, TypeScript, and TSX use a Babel AST pipeline. Other supported languages use heuristic parsers and may have incomplete results. Submitted code is parsed, not executed.
         </p>
         <p>
-          The deployment currently includes the analyzer service implementing the documented API for public repositories and ZIP archives. The sample atlas remains illustrative demo data, not an analysis of a user's repository and not evidence about how live service data is handled.
+          Live analyses are stored in the backend database with source content for the configured retention period (seven days by default; cleanup runs when the API process starts). The operator's deployment configuration controls authentication and retention. See the <a href="/privacy">Privacy notice</a> for details and limitations.
         </p>
       </section>
 
       <section className="legal-page__section" aria-labelledby="terms-limits">
-        <h2 id="terms-limits">Limits of analysis</h2>
+        <h2 id="terms-limits">Analysis limitations</h2>
         <p>
-          Repository maps and any future backend-provided findings are intended to help explore code structure. They may be incomplete, unavailable, or dependent on the submitted material and service capabilities. A structural impact estimate, if provided, is not a prediction of every runtime failure. The interface does not warrant that any sample or future analysis is complete, current, or suitable as the sole basis for a technical or business decision.
+          Static relationships may miss dynamic imports, runtime dispatch, aliases, generated code, package export maps, and other behavior. Token counts and complexity are calculated estimates; heuristic language results are explicitly less precise. Churn depends on Git history and is unavailable for ZIP uploads. Onboarding suggestions, cycle findings, health indicators, and change-impact results are structural evidence, not predictions or guarantees of runtime failures, security, or fitness for a particular purpose.
         </p>
         <p>
-          The frontend's client-side file checks, where present, do not establish that an archive is safe, accepted, or within server limits. Such acceptance depends on a compatible backend and its actual implementation.
-        </p>
-      </section>
-
-      <section className="legal-page__section" aria-labelledby="terms-submissions">
-        <h2 id="terms-submissions">Submissions and service handling</h2>
-        <p>
-          These draft terms do not state or promise how repository URLs, refs, uploaded archives, analysis results, or related technical information are processed, stored, retained, deleted, or located. Third-party processing, hosting practices, the identity and contact details of the operator, and future analytics remain unknown or unresolved. Consult a final, reviewed privacy notice before relying on a live service; the current <a href="/privacy">Privacy draft</a> explains these open questions but is not a final notice.
+          You remain responsible for reviewing source and analysis outputs before relying on them. Keep a backup of submitted work and do not use the service as the sole basis for a security, deployment, legal, or business decision.
         </p>
       </section>
 
-      <section className="legal-page__section" aria-labelledby="terms-finalization">
-        <h2 id="terms-finalization">What must be completed before launch</h2>
+      <section className="legal-page__section" aria-labelledby="terms-accounts">
+        <h2 id="terms-accounts">Accounts and availability</h2>
         <p>
-          The product owner must establish the operator identity and contact channel, deployment and backend behavior, applicable jurisdiction, and any domain-specific details, then replace this provisional text with terms that match the actual service. No company identity, address, domain, governing law, liability allocation, or other legal guarantee is supplied by this draft.
+          Keep account credentials private and notify the service operator if you believe an account is being misused. Account signup currently has no email-verification or password-reset flow. The service may be unavailable or unable to analyze a repository because of network, provider, parser, or resource limits. Failed or unsupported analyses should be reported rather than replaced with sample results.
         </p>
+      </section>
+
+      <section className="legal-page__section" aria-labelledby="terms-operator">
+        <h2 id="terms-operator">Operator and legal review</h2>
         <p>
-          This text is not legal advice. Qualified professional review is required before launch. Return to <a href="/">CodeDarpan home</a> or read the <a href="/privacy">Privacy draft</a>.
+          The project source does not identify the person or organization operating a specific deployment, its contact details, or governing jurisdiction. The deployment owner is responsible for publishing those details and obtaining jurisdiction-appropriate legal review before treating this page as a binding agreement. This page is plain-language product information, not legal advice. Return to <a href="/">CodeDarpan home</a> or read the <a href="/privacy">Privacy notice</a>.
         </p>
       </section>
     </LegalLayout>

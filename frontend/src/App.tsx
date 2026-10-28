@@ -24,12 +24,12 @@ export const routeMeta: Record<string, RouteMetaEntry> = {
   '/workspace/onboard': { title: 'Onboard | CodeDarpan Atlas', description: 'Review the returned contributor route and related issues.', noIndex: true },
   '/workspace/impact': { title: 'Impact | CodeDarpan Atlas', description: 'Review returned file and pull-request impact evidence.', noIndex: true },
   '/privacy': {
-    title: 'Privacy draft | CodeDarpan',
-    description: 'Review draft describing what is known and still unresolved about the CodeDarpan frontend.',
+    title: 'Privacy notice | CodeDarpan',
+    description: 'How CodeDarpan processes repository submissions, analysis data, account information, and retention.',
   },
   '/terms': {
-    title: 'Terms draft | CodeDarpan',
-    description: 'Provisional CodeDarpan terms for an evidence-first repository atlas frontend.',
+    title: 'Terms of use | CodeDarpan',
+    description: 'Submission requirements, service limits, and the scope and limitations of CodeDarpan analysis.',
   },
   '/account': { title: 'Account access | CodeDarpan', description: 'Sign in to your private CodeDarpan analysis workspace.', noIndex: true },
 };
@@ -37,7 +37,8 @@ export const routeMeta: Record<string, RouteMetaEntry> = {
 function RouteMeta() {
   const location = useLocation();
   useEffect(() => {
-    const meta = routeMeta[location.pathname];
+    const pathname = location.pathname.replace(/\/+$/, '') || '/';
+    const meta = routeMeta[pathname];
     if (meta) setPageMeta(meta.title, meta.description, meta.noIndex);
     else setPageMeta('Page not found | CodeDarpan', 'This address does not match a CodeDarpan page.', true);
     window.scrollTo({ top: 0, behavior: 'instant' });

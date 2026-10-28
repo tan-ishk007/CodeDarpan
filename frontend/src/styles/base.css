@@ -26,6 +26,7 @@ img { display: block; max-width: 100%; }
 .status-notice__copy { display: grid; gap: 2px; min-width: 0; }
 .status-notice__copy strong { font-size: 12px; }
 .status-notice__copy span { overflow-wrap: anywhere; }
+.status-notice__action { justify-self: start; margin-top: 4px; color: inherit; font-weight: 700; text-decoration: underline; text-underline-offset: 2px; }
 .icon-button { display: inline-grid; place-items: center; width: 34px; height: 34px; border: 1px solid var(--border); border-radius: 0; background: transparent; color: inherit; transition: background var(--short-transition), border-color var(--short-transition); }
 .icon-button:hover { border-color: var(--ink); background: rgba(250,247,240,.12); }
 .spinner, .spin { display: inline-block; animation: spin 850ms linear infinite; }

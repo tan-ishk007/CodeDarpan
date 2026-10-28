@@ -34,7 +34,7 @@ describe('CodeDarpan API integration', () => {
     const response=await fetch(`http://127.0.0.1:${port}/api/health`);
     expect(response.status).toBe(200);
     expect(response.headers.get('content-type')).toMatch(/application\/json/i);
-    expect(await response.json()).toEqual(expect.objectContaining({status:'ok',service:'CodeDarpan analyzer'}));
+    const health=await response.json() as any;expect(health).toEqual(expect.objectContaining({status:'ok',service:'CodeDarpan analyzer'}));expect(typeof health.storedAnalyses).toBe('number');expect(health.inProgressAnalyses).toBe(0);expect(health).not.toHaveProperty('activeAnalyses');
   });
   it('analyzes a ZIP and returns resolved imports, source, and AST metrics', async () => {
     const archive=await zip({'src/main.ts':"import { helper } from './helper';\nexport function main(x: number) { if (x) return helper(); return 0; }\n",'src/helper.ts':'export function helper(){ return 1 }','src/unrelated.ts':'export function helper(){ return 99 }'});
@@ -65,6 +65,10 @@ describe('CodeDarpan API integration', () => {
   it('returns a clear client error for a non-GitHub repository URL', async () => {
     const response=await fetch(`http://127.0.0.1:${port}/api/analyses`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({repositoryUrl:'https://example.com/acme/project'})});
     expect(response.status).toBe(400);expect((await response.json()).message).toMatch(/Only public github\.com repositories/);
+  });
+  it('rejects GitHub URLs with extra paths rather than silently analyzing a different repository', async () => {
+    const response=await fetch(`http://127.0.0.1:${port}/api/analyses`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({repositoryUrl:'https://github.com/octocat/Hello-World/issues'})});
+    expect(response.status).toBe(400);expect((await response.json()).message).toMatch(/exactly an owner and repository/);
   });
   it('reports an unsupported-only ZIP instead of creating an empty analysis', async () => {
     const archive=await zip({'README.md':'Documentation only.','index.html':'<h1>No supported source</h1>'});
@@ -118,4 +122,13 @@ describe('CodeDarpan API integration', () => {
     const response=await fetch(`http://127.0.0.1:${port}/api/analyses/${savedRunId}`);
     expect(response.status).toBe(200);expect((await response.json()).status).toBe('ready');
   });
+  it('rate-limits repeated analysis submissions and returns Retry-After', async () => {
+    for(let i=0;i<20;i++) {
+      const response=await fetch(`http://127.0.0.1:${port}/api/analyses`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({repositoryUrl:'https://example.com/acme/project'})});
+      expect(response.status).toBe(400);
+    }
+    const limited=await fetch(`http://127.0.0.1:${port}/api/analyses`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({repositoryUrl:'https://example.com/acme/project'})});
+    expect(limited.status).toBe(429);expect(Number(limited.headers.get('retry-after'))).toBeGreaterThan(0);expect((await limited.json()).message).toMatch(/Too many analysis submissions/);
+  });
+
 });

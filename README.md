@@ -15,7 +15,8 @@ The landing experience is a cinematic royal atlas: ivory surfaces, brass relatio
 - Email registration/login with account-scoped analysis access.
 - Google OAuth with state validation, HttpOnly state cookie, verified-email requirement and account reuse/linking.
 - Framer Motion landing narrative with reversible scroll animation and reduced-motion support.
-- SQLite persistence with configurable retention.
+- SQLite persistence with configurable retention and a per-account/IP analysis-submission rate limit.
+- Health status is served by `GET /api/health`; analysis submissions are protected when `CODEDARPAN_REQUIRE_AUTH=true`.
 - Docker Compose deployment with a same-origin frontend/API gateway.
 
 ## Requirements
@@ -53,7 +54,7 @@ The API health check is:
 curl http://localhost:3001/api/health
 ```
 
-A successful health response confirms API reachability. It does not guarantee that a particular GitHub request or repository submission will succeed.
+A successful health response confirms API reachability. It does not guarantee that a particular GitHub request or repository submission will succeed. The current public deployment also requires sign-in for analysis submissions; an anonymous POST returns HTTP 401. The homepage now offers a sign-in path when this happens.
 
 ## Google OAuth setup
 
@@ -202,19 +203,13 @@ codedarpan/
 
 JavaScript-family files receive the AST-grade Babel pipeline. Other supported languages are ingested through deterministic heuristic adapters and carry an explicit warning. The graph is a static structural map, not a complete runtime call graph: dynamic imports, package exports, aliases, runtime dispatch and unresolved relationships can remain unknown. Complexity and token counts are estimates. Impact and churn evidence is bounded and should not be treated as a prediction of every runtime failure.
 
-Only public GitHub repositories are supported by the frontend. Private repository access is not implemented. Uploaded archives and persisted analysis payloads may contain proprietary source code, so operators must protect the host, database, backups and logs and must publish accurate privacy/retention terms before launch.
+Only public GitHub repositories are supported by the frontend. Private repository access is not implemented. Uploaded archives and persisted analysis payloads may contain source code. The backend stores the source in SQLite with its analysis result; retention defaults to seven days and expired rows are purged at API startup. There is no self-service deletion endpoint in this version. Operators must protect the host, database, backups and logs and confirm actual provider retention before accepting submissions.
 
-Account signup currently has no email verification or password-reset flow. For a public deployment, consider an identity-aware proxy, invite policy, rate limits, TLS termination and reviewed legal/privacy documents.
+Account signup currently has no email verification or password-reset flow. Analysis submissions are limited to 20 per 10-minute in-memory window per account or source IP; this limiter resets when the API process restarts and is not a substitute for edge-level abuse controls. For a public deployment, consider an identity-aware proxy, invite policy, persistent rate limits, TLS termination and jurisdiction-appropriate legal review.
 
 ## Verification
 
-The final handoff was verified with:
-
-```text
-pnpm typecheck   passed
-pnpm test        55 tests passed
-pnpm build       passed, including Vite build and prerendering
-```
+Verification commands and current measured results are recorded in [BENCHMARK.md](BENCHMARK.md). This project does not claim the five-second parse or 60-FPS/500-node targets until measured on representative deployment hardware. Tool and external-service disclosure: [TOOLS_AND_SERVICES.md](TOOLS_AND_SERVICES.md).
 
 ## Troubleshooting
 
@@ -232,4 +227,4 @@ pnpm build       passed, including Vite build and prerendering
 
 ## License and launch review
 
-Review package licenses and confirm the project’s intended license before distribution. Replace the draft Privacy and Terms pages with deployment-specific, professionally reviewed documents before public launch.
+Review package licenses and confirm the project’s intended license before distribution. The Privacy and Terms pages now describe source-level processing, storage, limits and unknown deployment settings. The deployment owner must still publish a legal identity, working contact, provider-specific log/backup/region details, and obtain jurisdiction-appropriate legal review before treating them as binding documents.

@@ -44,11 +44,27 @@ export default function HomePage() {
   const [repositoryUrl, setRepositoryUrl] = useState('');
   const [ref, setRef] = useState('');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [notice, setNotice] = useState<{ kind: NoticeKind; title: string; message: string } | null>(null);
+  const [notice, setNotice] = useState<{ kind: NoticeKind; title: string; message: string; action?: { label: string; href: string } } | null>(null);
   const [busy, setBusy] = useState(false);
   const [dragging, setDragging] = useState(false);
 
   const showError = (title: string, message: string) => setNotice({ kind: 'error', title, message });
+  const showSubmissionFailure = (error: unknown) => {
+    if (error instanceof ApiError && error.status === 401) {
+      setNotice({
+        kind: 'error',
+        title: 'Sign in required',
+        message: 'This deployment protects repository analyses. Sign in or create an account, then return and submit the repository again.',
+        action: { label: 'Sign in or create account', href: '/account' },
+      });
+      return;
+    }
+    const message = error instanceof ApiError
+      ? error.message
+      : 'The request could not be completed. Check your connection and try again.';
+    const unavailable = !(error instanceof ApiError) || error.status === undefined || error.status >= 500;
+    showError(unavailable ? 'Analyzer unavailable' : 'Analysis failed', message);
+  };
 
   const acceptFile = (file?: File) => {
     if (!file) return;
@@ -85,7 +101,7 @@ export default function HomePage() {
       }
       navigate(`/workspace?runId=${encodeURIComponent(runId)}`);
     } catch (error) {
-      showError('Live analysis is unavailable', error instanceof ApiError ? error.message : 'The request could not be completed. Try again when the analyzer service is available.');
+      showSubmissionFailure(error);
     } finally {
       setBusy(false);
     }
@@ -108,7 +124,7 @@ export default function HomePage() {
       }
       navigate(`/workspace?runId=${encodeURIComponent(runId)}`);
     } catch (error) {
-      showError('Live analysis is unavailable', error instanceof ApiError ? error.message : 'The request could not be completed. Try again when the analyzer service is available.');
+      showSubmissionFailure(error);
     } finally {
       setBusy(false);
     }
@@ -137,8 +153,11 @@ export default function HomePage() {
             <h1 id="hero-title">The architecture is already there.<br /><em>Make it visible.</em></h1>
             <p className="hero-deck">Understand the code behind the code. Follow real dependencies, inspect matching source, and see what the returned evidence can—and cannot—tell you.</p>
 
-            <a className="story-start-link" href="#journey-title">Begin the atlas story <ArrowDown size={15} /></a>
-            <p className="hero-note"><ShieldAlert size={14} /> Follow the architecture first. Bring a repository after the story.</p>
+            <div className="hero-action-row">
+              <a className="button-primary" href="#repository-intake">Analyze a repository <ArrowUpRight size={15} /></a>
+              <a className="story-start-link" href="#journey-title">Begin the atlas story <ArrowDown size={15} /></a>
+            </div>
+            <p className="hero-note"><ShieldAlert size={14} /> Sample exploration is available; live analysis may require an account.</p>
           </div>
 
           <HeroAtlasScene image={heroImage} />
@@ -170,8 +189,8 @@ export default function HomePage() {
           <div className="intake-card">
             <div className="intake-head"><div><span className="intake-kicker">OPEN A REAL ATLAS</span><h2>Bring a repository</h2></div><span className="intake-index">01 / 02</span></div>
             <div className="intake-switch" role="tablist" aria-label="Choose a repository input type"><button id="tab-github" type="button" role="tab" aria-selected={intakeMode === 'github'} aria-controls="panel-github" onClick={() => { setIntakeMode('github'); setNotice(null); }}><Github size={15} /> GitHub</button><button id="tab-zip" type="button" role="tab" aria-selected={intakeMode === 'zip'} aria-controls="panel-zip" onClick={() => { setIntakeMode('zip'); setNotice(null); }}><FileArchive size={15} /> ZIP archive</button></div>
-            {intakeMode === 'github' ? <form id="panel-github" role="tabpanel" aria-labelledby="tab-github" onSubmit={handleGitHubSubmit} className="intake-form"><div className="repo-url-label-row"><label htmlFor="repository-url">Public GitHub repository URL</label><a className="repo-signin-button" href="/account">Sign in</a></div><div className="url-field"><Github aria-hidden="true" size={16} /><input id="repository-url" type="url" placeholder="https://github.com/owner/repository" value={repositoryUrl} onChange={(event) => setRepositoryUrl(event.target.value)} autoComplete="url" required /><button type="submit" disabled={busy} aria-label="Submit repository URL">{busy ? <span className="spinner" /> : <ArrowRight size={17} />}</button></div><div className="ref-row"><label htmlFor="repository-ref">Branch, tag or commit <span>(optional)</span></label><input id="repository-ref" type="text" placeholder="main" value={ref} onChange={(event) => setRef(event.target.value)} autoComplete="off" /></div><p className="field-hint">Public repositories only. Private access is not supported by this frontend.</p></form> : <form id="panel-zip" role="tabpanel" aria-labelledby="tab-zip" onSubmit={handleZipSubmit} className="intake-form"><div className={`drop-zone${dragging ? ' is-dragging' : ''}${selectedFile ? ' has-file' : ''}`} onDragOver={(event) => { event.preventDefault(); setDragging(true); }} onDragLeave={() => setDragging(false)} onDrop={onDrop}><input ref={fileInput} className="visually-hidden" type="file" accept=".zip,application/zip" aria-label="Choose ZIP archive" onChange={(event) => acceptFile(event.target.files?.[0])} /><FileArchive aria-hidden="true" size={22} />{selectedFile ? <><strong>{selectedFile.name}</strong><span>{(selectedFile.size / 1024 / 1024).toFixed(1)} MB · file name check only</span></> : <><strong>Drop a .zip archive here</strong><span>or choose a file from your device</span></>}<button className="button-quiet" type="button" onClick={() => fileInput.current?.click()}>{selectedFile ? 'Choose another' : 'Browse files'}</button></div><div className="zip-submit-row"><p>Server safety and size checks require the analyzer.</p><button className="button-primary" type="submit" disabled={busy || !selectedFile}>{busy ? 'Sending…' : 'Analyze ZIP'} <ArrowRight size={16} /></button></div></form>}
-            {notice && <StatusNotice kind={notice.kind} title={notice.title}>{notice.message}</StatusNotice>}
+            {intakeMode === 'github' ? <form id="panel-github" role="tabpanel" aria-labelledby="tab-github" onSubmit={handleGitHubSubmit} className="intake-form"><div className="repo-url-label-row"><label htmlFor="repository-url">Public GitHub repository URL</label><a className="repo-signin-button" href="/account">Sign in</a></div><div className="url-field"><Github aria-hidden="true" size={16} /><input id="repository-url" type="url" placeholder="https://github.com/owner/repository" value={repositoryUrl} onChange={(event) => setRepositoryUrl(event.target.value)} autoComplete="url" required /><button type="submit" disabled={busy} aria-label="Submit repository URL">{busy ? <span className="spinner" /> : <ArrowRight size={17} />}</button></div><div className="ref-row"><label htmlFor="repository-ref">Branch, tag or commit <span>(optional)</span></label><input id="repository-ref" type="text" placeholder="main" value={ref} onChange={(event) => setRef(event.target.value)} autoComplete="off" /></div><p className="field-hint">Public repositories only. Private access is not supported. This deployment requires sign-in before analysis; see <a href="/privacy">Privacy</a> for data handling.</p></form> : <form id="panel-zip" role="tabpanel" aria-labelledby="tab-zip" onSubmit={handleZipSubmit} className="intake-form"><div className={`drop-zone${dragging ? ' is-dragging' : ''}${selectedFile ? ' has-file' : ''}`} onDragOver={(event) => { event.preventDefault(); setDragging(true); }} onDragLeave={() => setDragging(false)} onDrop={onDrop}><input ref={fileInput} className="visually-hidden" type="file" accept=".zip,application/zip" aria-label="Choose ZIP archive" onChange={(event) => acceptFile(event.target.files?.[0])} /><FileArchive aria-hidden="true" size={22} />{selectedFile ? <><strong>{selectedFile.name}</strong><span>{(selectedFile.size / 1024 / 1024).toFixed(1)} MB · file name check only</span></> : <><strong>Drop a .zip archive here</strong><span>or choose a file from your device</span></>}<button className="button-quiet" type="button" onClick={() => fileInput.current?.click()}>{selectedFile ? 'Choose another' : 'Browse files'}</button></div><div className="zip-submit-row"><p>Server safety and size checks require the analyzer.</p><button className="button-primary" type="submit" disabled={busy || !selectedFile}>{busy ? 'Sending…' : 'Analyze ZIP'} <ArrowRight size={16} /></button></div></form>}
+            {notice && <StatusNotice kind={notice.kind} title={notice.title} action={notice.action}>{notice.message}</StatusNotice>}
             <div className="sample-entry"><span>Prefer to see the product first?</span><button type="button" onClick={() => openSample('explore')}>Explore sample atlas <ArrowUpRight size={15} /></button></div>
           </div>
         </section>

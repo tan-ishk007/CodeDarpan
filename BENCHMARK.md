@@ -1,28 +1,36 @@
-# CodeDarpan local benchmark report
+# Benchmark and verification report
 
-**Run:** 2026-10-28 (UTC) · **Runtime:** Node.js v22.23.4 · **Host exposed to process:** 6 vCPUs, Intel Xeon Processor @ 2.50 GHz, 23 GiB total memory · **Dataset:** deterministic ZIP with 500 TypeScript files, 5 relative imports per file, 2,500 expected import edges, 133,290 compressed bytes.
+**Date:** October 28, 2026. These are implementation checks on one sandbox, not a performance certification. No claim is made that all repositories parse in under five seconds or that 500+ node graphs render at 60 FPS.
 
-The API ran locally at `http://127.0.0.1:3201`. The final run indexed 500 files, emitted 1,000 graph nodes (500 file nodes plus 500 function nodes), and returned 2,500 import edges.
+## Environment
 
-| Measurement | Result |
-| --- | ---: |
-| Server analysis (parse/index/resolve/metrics) | 387 ms |
-| ZIP upload through analysis response | 558 ms |
-| Fetch normalized graph payload | 14 ms |
-| Total through graph fetch | 579 ms |
+Tests and the local analyzer ran on Node.js v22.23.4, pnpm 11.25.0, Linux 6.18.38+ x86_64, an Intel Xeon processor reported at 2.50 GHz, and approximately 21.5 GB of visible memory. Measurements were single runs; no warm-up, repeated-run distribution, container-equivalent profile, or peak-RSS sampling was collected.
 
-This is a local synthetic benchmark and does not establish cold-start, real repository, network download, peak-memory, or browser-rendering performance. In particular, no FPS/60 FPS claim is made. The current result is a measured API target result, not a claim that every repository will complete under five seconds. To reproduce, start `pnpm dev` and run `node backend/scripts/benchmark.mjs`; configure `BENCH_FILES` and `BENCH_FANOUT` for a different deterministic dataset. The script prints exact counters and timings. Timing boundaries are defined in the script; ZIP upload+analysis response includes local HTTP upload, extraction, and analysis work, while server analysis is measured from source ingestion through AST/graph metric construction.
+## Automated verification
 
-## Recheck run with process memory sampling
+The final handoff build passed `pnpm typecheck`, `pnpm test`, and `pnpm build`. The backend suite passed 25 tests; the frontend suite passed 32 tests. The tests cover health JSON, API response schemas, ZIP path traversal and limits, imports and function-call edges, source retrieval, metrics, account isolation, rate limiting, SQLite restoration, and UI API-client behavior. The final Vite production build completed in 6.18 seconds; the test-suite-reported durations were 2.59 seconds for backend tests and 0.43 seconds for frontend tests. These timings measure this test/build run, not repository analysis performance.
 
-**Run:** 2026-10-28 (UTC) · **Runtime:** Node.js v22.23.4 · **Host exposed to process:** 6 vCPUs, Intel Xeon Processor @ 2.50 GHz, 23 GiB total memory · **Dataset:** deterministic ZIP with 500 TypeScript files, 5 relative imports per file, 2,500 expected import edges, 133,290 compressed bytes.
+## End-to-end ingestion test
 
-| Measurement | Result |
-| --- | ---: |
-| Server analysis (parse/index/resolve/metrics) | 364 ms |
-| ZIP upload through analysis response | 517 ms |
-| Fetch normalized graph payload | 15 ms |
-| Total through graph fetch | 539 ms |
-| Analyzer process peak RSS | 180.6 MiB |
+The locally built backend was run with isolated `/tmp` SQLite storage and authentication disabled specifically for this controlled test. The exact same pinned public Express commit was analyzed through both supported input routes: GitHub URL and a ZIP downloaded from that commit.
 
-The analyzer process RSS was sampled from `/proc/<pid>/status` every 10 ms during the benchmark (80 samples). A shorter transient peak could be missed. This run produced 500 file records, 1,000 graph nodes (file and function nodes) and 2,500 import edges. The parse/analysis result met the under-five-second target for this synthetic case only. No sustained browser FPS or 60 FPS result was measured; the graph-rendering target remains unverified. These values are single-run, environment-specific measurements, not deployment guarantees.
+| Input | Repository/revision | Compressed ZIP | Files | Graph nodes | Edges | Analysis `durationMs` | POST wall time | Source inspection |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | --- |
+| GitHub URL | `expressjs/express`, `1c6f1b0fe4000977b9a7b4f34097e4d527dd9824` (`master`) | N/A | 142 | 362 | 40 | 830 ms | 2.20 s | HTTP 200, non-empty source |
+| ZIP upload | Same pinned commit | 237,452 bytes | 142 | 362 | 40 | 562 ms | 0.63 s | HTTP 200, non-empty source |
+
+The API `durationMs` starts after GitHub download or ZIP decompression, so it does not measure complete ingest time. POST wall time includes network/archive transfer and the request path, but the numbers above are single local tests and should not be generalized. The output contained no parser warnings for this JavaScript-only repository.
+
+## Deployed service check and limitation
+
+On October 28, 2026, `https://codedarpan-trial.onrender.com/api/health` returned HTTP 200 with `status: ok`. A safe authorization probe of the protected analysis route returned HTTP 401 with “Authentication required.” The public deployment therefore requires a signed-in account, which was not available for a live repository submission test. Local authenticated and anonymous behavior is covered by backend integration tests; deployment-specific authenticated ingestion remains to be verified by its operator.
+
+## Performance targets not yet measured
+
+| Target | Status | Required measurement |
+| --- | --- | --- |
+| Parse a representative repository in under five seconds | One 142-file sample parsed in under one second after download/decompression; general target not established | Repeat across representative repositories and languages; record commit, compressed/expanded bytes, accepted/skipped files, end-to-end wall time, parse-only time, and peak RSS on deployment-equivalent hardware. |
+| Render and interact with 500+ nodes at 60 FPS | Not measured | Use a fixture with at least 500 nodes and representative edges; record browser/OS/GPU, first layout time, frame-time distribution during scripted pan/zoom/select, and memory. |
+| Worst-case ZIP size/file-count processing | Not measured to configured limits | Exercise 25 MiB compressed, 5,000 files, 100 MiB expanded, 2 MiB per file, and malformed archives while sampling peak memory and request time. |
+
+Do not extrapolate the 25-node illustrative sample or this one-repository ingestion test to the performance targets. Keep raw results and machine details with any future claims.
